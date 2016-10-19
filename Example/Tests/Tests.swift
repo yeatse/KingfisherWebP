@@ -1,6 +1,7 @@
 import UIKit
 import XCTest
 import KingfisherWebP
+import Kingfisher
 
 class Tests: XCTestCase {
     
@@ -14,6 +15,15 @@ class Tests: XCTestCase {
         super.tearDown()
     }
     
+    func testProcessor() {
+        let p = WebPImageProcessor.default
+        XCTAssertEqual(p.identifier, "com.yeatse.KingfisherWebP.Processor")
+        let url = Bundle(for: Tests.self).url(forResource: "cover", withExtension: "webp")
+        let data = try! Data(contentsOf: url!)
+        let resultImage = p.process(item: .data(data), options: [])
+        XCTAssertNotNil(resultImage)
+    }
+    
     func testExample() {
         // This is an example of a functional test case.
         XCTAssert(true, "Pass")
@@ -21,7 +31,7 @@ class Tests: XCTestCase {
     
     func testPerformanceExample() {
         // This is an example of a performance test case.
-        self.measureBlock() {
+        self.measure() {
             // Put the code you want to measure the time of here.
         }
     }

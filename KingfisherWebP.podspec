@@ -31,12 +31,15 @@ TODO: Add long description of the pod here.
   s.ios.deployment_target = '8.0'
 
   s.source_files = 'KingfisherWebP/Classes/**/*'
+  s.xcconfig = {
+    'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/libwebp/src'
+  }
+  s.watchos.xcconfig = {
+    'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) WEBP_USE_INTRINSICS=1',
+    'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/libwebp/src'
+  }
   
-  # s.resource_bundles = {
-  #   'KingfisherWebP' => ['KingfisherWebP/Assets/*.png']
-  # }
-
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  s.dependency 'Kingfisher', '~> 3.0'
+  s.dependency 'libwebp'
+  
 end
