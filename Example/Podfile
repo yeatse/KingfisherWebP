@@ -1,0 +1,6 @@
+use_frameworks!
+target 'KingfisherWebP_Tests' do
+  pod 'KingfisherWebP', :path => '../'
+  
+  
+end
