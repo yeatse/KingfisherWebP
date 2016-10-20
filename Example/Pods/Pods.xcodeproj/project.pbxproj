@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0027DD490E299D0063BBC49A9F2B2D13 /* WebPImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA0632059A802CD4DED697E7A5CD3AA /* WebPImage.swift */; };
+		0027DD490E299D0063BBC49A9F2B2D13 /* Image+WebP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA0632059A802CD4DED697E7A5CD3AA /* Image+WebP.swift */; };
 		002E77587A704B345B1BE4124B9FE697 /* picture.c in Sources */ = {isa = PBXBuildFile; fileRef = EA0A841FAC6925142155F55C6F55DF06 /* picture.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		006AEEB5E2A508AF1731944F6B5BCEDA /* vp8li.h in Headers */ = {isa = PBXBuildFile; fileRef = 3825B946697A9EDB007EE4514B51D51E /* vp8li.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		017C03212C05F5D44B2904EBC53478B5 /* format_constants.h in Headers */ = {isa = PBXBuildFile; fileRef = 22F0814CFABEDB847E66D616EAE6A7E5 /* format_constants.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -350,7 +350,7 @@
 		98F27D552F62F949A76455036522BE9D /* WebPProcessor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WebPProcessor.swift; sourceTree = "<group>"; };
 		99EB37BBD33EE20911B1B538944C48C5 /* webp.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = webp.c; path = src/dec/webp.c; sourceTree = "<group>"; };
 		9A578F3EAE443F515CE1DEADB8FFBD55 /* lossless_enc_sse41.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = lossless_enc_sse41.c; path = src/dsp/lossless_enc_sse41.c; sourceTree = "<group>"; };
-		9AA0632059A802CD4DED697E7A5CD3AA /* WebPImage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WebPImage.swift; sourceTree = "<group>"; };
+		9AA0632059A802CD4DED697E7A5CD3AA /* Image+WebP.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Image+WebP.swift"; sourceTree = "<group>"; };
 		9EF5D830B6F20097D12FBE5699DD9FB8 /* enc_sse41.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = enc_sse41.c; path = src/dsp/enc_sse41.c; sourceTree = "<group>"; };
 		9F269B43A8BEFC31CE6C94C9C96E3385 /* dec_sse41.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = dec_sse41.c; path = src/dsp/dec_sse41.c; sourceTree = "<group>"; };
 		9FEB259B9E5BAC3E6BE4CD16EF3D04B8 /* delta_palettization.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = delta_palettization.c; path = src/enc/delta_palettization.c; sourceTree = "<group>"; };
@@ -845,7 +845,7 @@
 		F75C409B6E00899396B709D142115028 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				9AA0632059A802CD4DED697E7A5CD3AA /* WebPImage.swift */,
+				9AA0632059A802CD4DED697E7A5CD3AA /* Image+WebP.swift */,
 				98F27D552F62F949A76455036522BE9D /* WebPProcessor.swift */,
 				386C92BC1DB8B794009C22E0 /* WebPSerializer.swift */,
 				386C92B81DB8925C009C22E0 /* CGImage+WebP.h */,
@@ -1053,7 +1053,7 @@
 			files = (
 				386C92BB1DB8925C009C22E0 /* CGImage+WebP.m in Sources */,
 				80E7F2DD080B6AEB35492399A194B5B1 /* KingfisherWebP-dummy.m in Sources */,
-				0027DD490E299D0063BBC49A9F2B2D13 /* WebPImage.swift in Sources */,
+				0027DD490E299D0063BBC49A9F2B2D13 /* Image+WebP.swift in Sources */,
 				12ADE12907EB05D867A1FA0DCCB6D25E /* WebPProcessor.swift in Sources */,
 				386C92BD1DB8B794009C22E0 /* WebPSerializer.swift in Sources */,
 			);

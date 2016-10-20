@@ -1,5 +1,5 @@
 //
-//  WebPImage.swift
+//  Image+WebP.swift
 //  Pods
 //
 //  Created by yeatse on 2016/10/19.
@@ -10,24 +10,26 @@ import Kingfisher
 
 // MARK: - Image Representation
 extension Kingfisher where Base: Image {
-    // MARK: - WebP
     func webpRepresentation() -> Data? {
-        guard let cgImage = base.cgImage else { return nil }
+        guard let cgImage = base.cgImage else {
+            return nil
+        }
         return WebPRepresentationDataCreateWithImage(cgImage) as? Data
     }
 }
 
 // MARK: - Create image from WebP data
 extension Kingfisher where Base: Image {
-    static func image(webpData: Data) -> Image? {
+    static func image(webpData: Data, scale: CGFloat) -> Image? {
         guard let cgImage = CGImageCreateWithWebPData(webpData as CFData) else {
             return nil;
         }
         
-        return Image(cgImage: cgImage)
+        return Image(cgImage: cgImage, scale: scale, orientation: .up)
     }
 }
 
+// MARK: - WebP Format Testing
 extension Data {
     var isWebPFormat: Bool {
         if count < 12 {
@@ -45,5 +47,29 @@ extension Data {
         } else {
             return false
         }
+    }
+}
+
+// MARK: - Helper
+extension KingfisherOptionsInfoItem {
+    var isScaleFactor: Bool {
+        if case .scaleFactor = self {
+            return true
+        } else {
+            return false
+        }
+    }
+}
+
+extension Collection where Iterator.Element == KingfisherOptionsInfoItem {
+    var firstScaleFactorItem: KingfisherOptionsInfoItem? {
+        return index { $0.isScaleFactor }.flatMap { self[$0] }
+    }
+    
+    var scaleFactor: CGFloat {
+        if let item = firstScaleFactorItem, case .scaleFactor(let scale) = item {
+            return scale
+        }
+        return 1.0
     }
 }

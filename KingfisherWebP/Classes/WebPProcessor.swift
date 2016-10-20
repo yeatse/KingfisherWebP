@@ -9,10 +9,10 @@
 import Foundation
 import Kingfisher
 
-public struct WebPImageProcessor: ImageProcessor {
-    public static let `default` = WebPImageProcessor()
+public struct WebPProcessor: ImageProcessor {
+    public static let `default` = WebPProcessor()
     
-    public let identifier = "com.yeatse.KingfisherWebP.Processor"
+    public let identifier = "com.yeatse.WebPProcessor"
     
     public init() {}
     
@@ -22,10 +22,11 @@ public struct WebPImageProcessor: ImageProcessor {
             return image
         case .data(let data):
             if data.isWebPFormat {
-                return Kingfisher<Image>.image(webpData: data)
+                return Kingfisher<Image>.image(webpData: data, scale: options.scaleFactor)
             } else {
                 return DefaultImageProcessor.default.process(item: item, options: options)
             }
         }
     }
 }
+

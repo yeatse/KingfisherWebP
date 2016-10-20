@@ -8,24 +8,42 @@
 
 /* Begin PBXBuildFile section */
 		23214818D146F5446EFC5EC8 /* Pods_KingfisherWebP_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25C3BF0FCE60D20771A69AE2 /* Pods_KingfisherWebP_Tests.framework */; };
-		38DAF13C1DB7A36C0056D882 /* cover.webp in Resources */ = {isa = PBXBuildFile; fileRef = 38DAF13B1DB7A3660056D882 /* cover.webp */; };
-		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
+		383E63E31DB920BE0041CE17 /* cover.png in Resources */ = {isa = PBXBuildFile; fileRef = 383E63DD1DB920BE0041CE17 /* cover.png */; };
+		383E63E41DB920BE0041CE17 /* cover.webp in Resources */ = {isa = PBXBuildFile; fileRef = 383E63DE1DB920BE0041CE17 /* cover.webp */; };
+		383E63E51DB920BE0041CE17 /* kingfisher.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 383E63DF1DB920BE0041CE17 /* kingfisher.jpg */; };
+		383E63E61DB920BE0041CE17 /* kingfisher.webp in Resources */ = {isa = PBXBuildFile; fileRef = 383E63E01DB920BE0041CE17 /* kingfisher.webp */; };
+		383E63E71DB920BE0041CE17 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 383E63E11DB920BE0041CE17 /* logo.png */; };
+		383E63E81DB920BE0041CE17 /* logo.webp in Resources */ = {isa = PBXBuildFile; fileRef = 383E63E21DB920BE0041CE17 /* logo.webp */; };
+		607FACEC1AFB9204008FA782 /* KingfisherWebPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* KingfisherWebPTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		181E194F167762593F54F29D /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		1B4330F8E308C8F803AA06C6 /* Pods-KingfisherWebP_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KingfisherWebP_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-KingfisherWebP_Tests/Pods-KingfisherWebP_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		25C3BF0FCE60D20771A69AE2 /* Pods_KingfisherWebP_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_KingfisherWebP_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		38DAF13B1DB7A3660056D882 /* cover.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = cover.webp; sourceTree = "<group>"; };
+		383E63DD1DB920BE0041CE17 /* cover.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cover.png; sourceTree = "<group>"; };
+		383E63DE1DB920BE0041CE17 /* cover.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = cover.webp; sourceTree = "<group>"; };
+		383E63DF1DB920BE0041CE17 /* kingfisher.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = kingfisher.jpg; sourceTree = "<group>"; };
+		383E63E01DB920BE0041CE17 /* kingfisher.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = kingfisher.webp; sourceTree = "<group>"; };
+		383E63E11DB920BE0041CE17 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
+		383E63E21DB920BE0041CE17 /* logo.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = logo.webp; sourceTree = "<group>"; };
+		383E63ED1DB92CB20041CE17 /* KingfisherWebPExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KingfisherWebPExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACE51AFB9204008FA782 /* KingfisherWebP_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KingfisherWebP_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
+		607FACEB1AFB9204008FA782 /* KingfisherWebPTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KingfisherWebPTests.swift; sourceTree = "<group>"; };
 		7B8DF0C5D391E104D17A322F /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		BC1668044057334C209DECF6 /* KingfisherWebP.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = KingfisherWebP.podspec; path = ../KingfisherWebP.podspec; sourceTree = "<group>"; };
 		E64623EFC52785C2C626785E /* Pods-KingfisherWebP_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KingfisherWebP_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-KingfisherWebP_Tests/Pods-KingfisherWebP_Tests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		383E63EA1DB92CB20041CE17 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		607FACE21AFB9204008FA782 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -54,6 +72,19 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		383E63DC1DB920BE0041CE17 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				383E63DD1DB920BE0041CE17 /* cover.png */,
+				383E63DE1DB920BE0041CE17 /* cover.webp */,
+				383E63DF1DB920BE0041CE17 /* kingfisher.jpg */,
+				383E63E01DB920BE0041CE17 /* kingfisher.webp */,
+				383E63E11DB920BE0041CE17 /* logo.png */,
+				383E63E21DB920BE0041CE17 /* logo.webp */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		607FACC71AFB9204008FA782 = {
 			isa = PBXGroup;
 			children = (
@@ -69,6 +100,7 @@
 			isa = PBXGroup;
 			children = (
 				607FACE51AFB9204008FA782 /* KingfisherWebP_Tests.xctest */,
+				383E63ED1DB92CB20041CE17 /* KingfisherWebPExample.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -76,8 +108,8 @@
 		607FACE81AFB9204008FA782 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				607FACEB1AFB9204008FA782 /* Tests.swift */,
-				38DAF13B1DB7A3660056D882 /* cover.webp */,
+				607FACEB1AFB9204008FA782 /* KingfisherWebPTests.swift */,
+				383E63DC1DB920BE0041CE17 /* Resources */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
 			path = Tests;
@@ -104,6 +136,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		383E63EC1DB92CB20041CE17 /* KingfisherWebPExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 383E63FC1DB92CB20041CE17 /* Build configuration list for PBXNativeTarget "KingfisherWebPExample" */;
+			buildPhases = (
+				383E63E91DB92CB20041CE17 /* Sources */,
+				383E63EA1DB92CB20041CE17 /* Frameworks */,
+				383E63EB1DB92CB20041CE17 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = KingfisherWebPExample;
+			productName = KingfisherWebPExample;
+			productReference = 383E63ED1DB92CB20041CE17 /* KingfisherWebPExample.app */;
+			productType = "com.apple.product-type.application";
+		};
 		607FACE41AFB9204008FA782 /* KingfisherWebP_Tests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 607FACF21AFB9204008FA782 /* Build configuration list for PBXNativeTarget "KingfisherWebP_Tests" */;
@@ -130,10 +179,14 @@
 		607FACC81AFB9204008FA782 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0720;
+				LastSwiftUpdateCheck = 0800;
 				LastUpgradeCheck = 0800;
-				ORGANIZATIONNAME = CocoaPods;
+				ORGANIZATIONNAME = "Yeatse CC";
 				TargetAttributes = {
+					383E63EC1DB92CB20041CE17 = {
+						CreatedOnToolsVersion = 8.0;
+						ProvisioningStyle = Automatic;
+					};
 					607FACE41AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
 						TestTargetID = 607FACCF1AFB9204008FA782;
@@ -154,16 +207,29 @@
 			projectRoot = "";
 			targets = (
 				607FACE41AFB9204008FA782 /* KingfisherWebP_Tests */,
+				383E63EC1DB92CB20041CE17 /* KingfisherWebPExample */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		383E63EB1DB92CB20041CE17 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		607FACE31AFB9204008FA782 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				38DAF13C1DB7A36C0056D882 /* cover.webp in Resources */,
+				383E63E51DB920BE0041CE17 /* kingfisher.jpg in Resources */,
+				383E63E71DB920BE0041CE17 /* logo.png in Resources */,
+				383E63E61DB920BE0041CE17 /* kingfisher.webp in Resources */,
+				383E63E31DB920BE0041CE17 /* cover.png in Resources */,
+				383E63E81DB920BE0041CE17 /* logo.webp in Resources */,
+				383E63E41DB920BE0041CE17 /* cover.webp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,17 +284,60 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		383E63E91DB92CB20041CE17 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		607FACE11AFB9204008FA782 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				607FACEC1AFB9204008FA782 /* Tests.swift in Sources */,
+				607FACEC1AFB9204008FA782 /* KingfisherWebPTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		383E63FD1DB92CB20041CE17 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				INFOPLIST_FILE = KingfisherWebPExample/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.yeatse.KingfisherWebPExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		383E63FE1DB92CB20041CE17 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				INFOPLIST_FILE = KingfisherWebPExample/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.yeatse.KingfisherWebPExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		607FACED1AFB9204008FA782 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -359,6 +468,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		383E63FC1DB92CB20041CE17 /* Build configuration list for PBXNativeTarget "KingfisherWebPExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				383E63FD1DB92CB20041CE17 /* Debug */,
+				383E63FE1DB92CB20041CE17 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		607FACCB1AFB9204008FA782 /* Build configuration list for PBXProject "KingfisherWebP" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

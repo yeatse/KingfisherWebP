@@ -18,10 +18,6 @@ public struct WebPSerializer: CacheSerializer {
     }
     
     public func image(with data: Data, options: KingfisherOptionsInfo?) -> Image? {
-        if data.isWebPFormat {
-            return Kingfisher<Image>.image(webpData: data)
-        } else {
-            return DefaultCacheSerializer.default.image(with: data, options: options)
-        }
+        return WebPProcessor.default.process(item: .data(data), options: options ?? [])
     }
 }

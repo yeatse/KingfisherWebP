@@ -10,69 +10,41 @@
 #import "webp/decode.h"
 #import "webp/encode.h"
 
-static void FreeWebPDecoderConfig(WebPDecoderConfig* config)
-{
-    WebPFreeDecBuffer(&(config->output));
-    free(config);
-}
-
-// Callback function of CoreGraphics to free underlying memory
-static void FreeImageData(void *info, const void *data, size_t size)
-{
-    if(info != NULL) {
-        FreeWebPDecoderConfig((WebPDecoderConfig *) info);
-    } else {
-        free((void *)data);
-    }
-}
-
 CGImageRef __nullable CGImageCreateWithWebPData(CFDataRef __nonnull webpData)
 {
+    // get features
+    WebPBitstreamFeatures features;
+    if (WebPGetFeatures(CFDataGetBytePtr(webpData), CFDataGetLength(webpData), &features) != VP8_STATUS_OK) {
+        return NULL;
+    }
+    
     int width = 0, height = 0;
-    if (!WebPGetInfo(CFDataGetBytePtr(webpData), CFDataGetLength(webpData), &width, &height)) {
-        return NULL;
+    uint8_t* buffer = NULL;
+    if (features.has_alpha) {
+        buffer = WebPDecodeRGBA(CFDataGetBytePtr(webpData), CFDataGetLength(webpData), &width, &height);
+    } else {
+        buffer = WebPDecodeRGB(CFDataGetBytePtr(webpData), CFDataGetLength(webpData), &width, &height);
     }
     
-    // Configure decoder
-    WebPDecoderConfig *config = malloc(sizeof(WebPDecoderConfig));
-    if (!WebPInitDecoderConfig(config)) {
-        FreeWebPDecoderConfig(config);
-        return NULL;
-    }
-    
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-    // speed on iphone
-    config->options.no_fancy_upsampling = 1;
-#else
-    // quality on mac
-    config->options.no_fancy_upsampling = 0;
-#endif
-    
-    config->options.bypass_filtering = 0;
-    config->options.use_threads = 1;
-    config->output.colorspace = config->input.has_alpha ? MODE_rgbA : MODE_RGB;
-    
-    // decode image
-    if (WebPDecode(CFDataGetBytePtr(webpData), CFDataGetLength(webpData), config) != VP8_STATUS_OK) {
-        FreeWebPDecoderConfig(config);
-        return NULL;
-    }
+    size_t components = features.has_alpha ? 4 : 3;
     
     // create image provider on output of webp decoder
-    CGDataProviderRef provider = CGDataProviderCreateWithData(config, config->output.u.RGBA.rgba, config->output.u.RGBA.size, FreeImageData);
+    CFDataRef decodedData = CFDataCreate(kCFAllocatorDefault, buffer, width * height * components);
+    WebPFree(buffer);
+    CGDataProviderRef provider = CGDataProviderCreateWithCFData(decodedData);
     
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    CGBitmapInfo bitmapInfo = config->input.has_alpha ? kCGImageAlphaPremultipliedLast : kCGImageAlphaNone;
+    CGBitmapInfo bitmapInfo = features.has_alpha ? kCGImageAlphaPremultipliedLast : kCGImageAlphaNone;
     CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
-    size_t components = config->input.has_alpha ? 4 : 3;
     
-    CGImageRef imageRef = CGImageCreate(width, height, 8, components * 8, config->output.u.RGBA.stride, colorSpace, bitmapInfo, provider, NULL, NO, renderingIntent);
+    CGImageRef image = CGImageCreate(width, height, 8, components * 8, width * components, colorSpace, bitmapInfo, provider, NULL, NO, renderingIntent);
     
     // clean up
     CGColorSpaceRelease(colorSpace); 
     CGDataProviderRelease(provider);
+    CFRelease(decodedData);
     
-    return imageRef;
+    return image;
 }
 
 
@@ -105,7 +77,7 @@ CFDataRef WebPRepresentationDataCreateWithImage(CGImageRef image)
     }
     CFRelease(imageData);
     
-    CFDataRef data = CFDataCreate(CFAllocatorGetDefault(), output, outputSize);
+    CFDataRef data = CFDataCreate(kCFAllocatorDefault, output, outputSize);
     WebPFree(*output);
     
     return data;
