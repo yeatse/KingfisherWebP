@@ -12,14 +12,19 @@ import Kingfisher
 extension Kingfisher where Base: Image {
     // MARK: - WebP
     func webpRepresentation() -> Data? {
-        return UIImagePNGRepresentation(base)
+        guard let cgImage = base.cgImage else { return nil }
+        return WebPRepresentationDataCreateWithImage(cgImage) as? Data
     }
 }
 
 // MARK: - Create image from WebP data
 extension Kingfisher where Base: Image {
-    static func image(webpData: Data, scale: CGFloat) -> Image? {
-        return UIImage.sd_image(withWebPData: webpData)
+    static func image(webpData: Data) -> Image? {
+        guard let cgImage = CGImageCreateWithWebPData(webpData as CFData) else {
+            return nil;
+        }
+        
+        return Image(cgImage: cgImage)
     }
 }
 

@@ -4,4 +4,4 @@
 FOUNDATION_EXPORT double KingfisherWebPVersionNumber;
 FOUNDATION_EXPORT const unsigned char KingfisherWebPVersionString[];
 
-#import "UIImage+WebP.h"
+#import "CGImage+WebP.h"

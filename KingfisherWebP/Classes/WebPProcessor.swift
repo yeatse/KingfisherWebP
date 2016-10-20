@@ -22,25 +22,10 @@ public struct WebPImageProcessor: ImageProcessor {
             return image
         case .data(let data):
             if data.isWebPFormat {
-                return Kingfisher<Image>.image(webpData: data, scale: options.scaleFactor)
+                return Kingfisher<Image>.image(webpData: data)
             } else {
                 return DefaultImageProcessor.default.process(item: item, options: options)
             }
-        }
-    }
-}
-
-extension Collection where Iterator.Element == KingfisherOptionsInfoItem {
-    var scaleFactor: CGFloat {
-        let item = index {
-            if case .scaleFactor = $0 { return true }
-            else { return false }
-            }.flatMap{ self[$0] }
-        
-        if let item = item, case .scaleFactor(let scale) = item {
-            return scale
-        } else {
-            return 1.0
         }
     }
 }
