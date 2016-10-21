@@ -78,7 +78,7 @@ CFDataRef WebPRepresentationDataCreateWithImage(CGImageRef image)
     CFRelease(imageData);
     
     CFDataRef data = CFDataCreate(kCFAllocatorDefault, output, outputSize);
-    WebPFree(*output);
+    WebPFree(output);
     
     return data;
 }
