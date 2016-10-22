@@ -10,39 +10,51 @@
 #import "webp/decode.h"
 #import "webp/encode.h"
 
+static inline UInt8 MulDiv255Round(UInt16 a, UInt16 b)
+{
+    unsigned prod = a * b + 128;
+    return (prod + (prod >> 8)) >> 8;
+}
+
+void ReleaseWebPConfig(void *info, const void *data, size_t size)
+{
+    WebPDecoderConfig* config = (WebPDecoderConfig*)info;
+    WebPFreeDecBuffer(&config->output);
+    free(config);
+}
+
 CGImageRef __nullable CGImageCreateWithWebPData(CFDataRef __nonnull webpData)
 {
-    // get features
-    WebPBitstreamFeatures features;
-    if (WebPGetFeatures(CFDataGetBytePtr(webpData), CFDataGetLength(webpData), &features) != VP8_STATUS_OK) {
+    WebPDecoderConfig* config = (WebPDecoderConfig*)malloc(sizeof(WebPDecoderConfig));
+    if (!WebPInitDecoderConfig(config)) {
+        free(config);
         return NULL;
     }
     
-    int width = 0, height = 0;
-    uint8_t* buffer = NULL;
-    if (features.has_alpha) {
-        buffer = WebPDecodeRGBA(CFDataGetBytePtr(webpData), CFDataGetLength(webpData), &width, &height);
-    } else {
-        buffer = WebPDecodeRGB(CFDataGetBytePtr(webpData), CFDataGetLength(webpData), &width, &height);
+    if (WebPGetFeatures(CFDataGetBytePtr(webpData), CFDataGetLength(webpData), &config->input) != VP8_STATUS_OK) {
+        free(config);
+        return NULL;
     }
     
-    size_t bytesPerPixel = features.has_alpha ? 4 : 3;
+    config->options.use_threads = 1;
+    config->output.colorspace = MODE_rgbA;
     
-    // create image provider on output of webp decoder
-    CFDataRef decodedData = CFDataCreate(kCFAllocatorDefault, buffer, width * height * bytesPerPixel);
-    WebPFree(buffer);
-    CGDataProviderRef provider = CGDataProviderCreateWithCFData(decodedData);
+    if (WebPDecode(CFDataGetBytePtr(webpData), CFDataGetLength(webpData), config) != VP8_STATUS_OK) {
+        free(config);
+        return NULL;
+    }
+    
+    CGDataProviderRef provider = CGDataProviderCreateWithData(config, config->output.u.RGBA.rgba, config->output.u.RGBA.size, ReleaseWebPConfig);
     
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    CGBitmapInfo bitmapInfo = features.has_alpha ? kCGImageAlphaLast : kCGImageAlphaNone;
+    CGBitmapInfo bitmapInfo = kCGImageAlphaPremultipliedLast;
     CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
     
-    CGImageRef image = CGImageCreate(width, height, 8, bytesPerPixel * 8, width * bytesPerPixel, colorSpace, bitmapInfo, provider, NULL, NO, renderingIntent);
+    CGImageRef image = CGImageCreate(config->input.width, config->input.height, 8, 32, config->output.u.RGBA.stride, colorSpace, bitmapInfo, provider, NULL, NO, renderingIntent);
     
     // clean up
     CGColorSpaceRelease(colorSpace); 
     CGDataProviderRelease(provider);
-    CFRelease(decodedData);
     
     return image;
 }
@@ -62,21 +74,21 @@ CFDataRef WebPRepresentationDataCreateWithImage(CGImageRef image)
     CGContextDrawImage(context, CGRectMake(0, 0, width, height), image);
     
     UInt8* bitmapData = (UInt8*)CGBitmapContextGetData(context);
+    size_t pixelCount = width * height;
     
     // Get real rgb from premultiplied one
-    for (int i = 0; i < width * height * bytesPerPixel; i += bytesPerPixel) {
-        UInt8 alpha = bitmapData[i + 3];
-        if (alpha == 0 || alpha == UINT8_MAX) {
-            continue;
+    for (; pixelCount-- > 0; bitmapData += 4) {
+        UInt8 alpha = bitmapData[3];
+        if (alpha != UINT8_MAX) {
+            bitmapData[0] = MulDiv255Round(bitmapData[0], alpha);
+            bitmapData[1] = MulDiv255Round(bitmapData[1], alpha);
+            bitmapData[2] = MulDiv255Round(bitmapData[2], alpha);
         }
-        bitmapData[i] = (UInt8)round(bitmapData[i] * 255.0 / alpha);
-        bitmapData[i + 1] = (UInt8)round(bitmapData[i] * 255.0 / alpha);
-        bitmapData[i + 2] = (UInt8)round(bitmapData[i] * 255.0 / alpha);
     }
     
     // Encode
     uint8_t *output;
-    size_t outputSize = WebPEncodeLosslessRGBA(bitmapData, width, height, width * bytesPerPixel, &output);
+    size_t outputSize = WebPEncodeLosslessRGBA(CGBitmapContextGetData(context), width, height, width * bytesPerPixel, &output);
     
     CGContextRelease(context);
     CGColorSpaceRelease(colorSpace);

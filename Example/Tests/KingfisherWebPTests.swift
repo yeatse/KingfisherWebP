@@ -51,10 +51,12 @@ class KingfisherWebPTests: XCTestCase {
     
     func testWebPSerializing() {
         let s = WebPSerializer.default
+        
         let images = originalFileNames.map { (fileName) -> Image in
             let data = Data(fileName: fileName)
             return Image(data: data)!
         }
+        
         images.enumerated().forEach { (index, image) in
             let data1 = s.data(with: image, original: nil)
             XCTAssertNotNil(data1)
@@ -62,11 +64,22 @@ class KingfisherWebPTests: XCTestCase {
             let encodedImage = s.image(with: data1!, options: [])
             XCTAssertNotNil(encodedImage, originalFileNames[index])
             
-            XCTAssertTrue(image.renderEqual(to: encodedImage!), originalFileNames[index])
+            XCTAssertTrue(image.renderEqual(to: encodedImage!, tolerancePercent: 0.05), originalFileNames[index])
         }
     }
     
-    func testSerializer() {
+    func testDefaultSerializing() {
+        let s = WebPSerializer.default
+        
+        originalFileNames.enumerated().forEach { (index, fileName) in
+            let data = Data(fileName: fileName)
+            let image = Image(data: data)!
+            
+            let defaultSerializedData = DefaultCacheSerializer.default.data(with: image, original: data)
+            let serializedData = s.data(with: image, original: data)
+            
+            XCTAssertEqual(defaultSerializedData, serializedData, fileName)
+        }
     }
 }
 
@@ -80,7 +93,7 @@ extension Data {
 
 // Copied from Kingfisher project
 extension Image {
-    func renderEqual(to image: Image, withinTolerance tolerance: UInt8 = 3) -> Bool {
+    func renderEqual(to image: Image, withinTolerance tolerance: UInt8 = 3, tolerancePercent: Double = 0) -> Bool {
         
         guard size == image.size else { return false }
         guard let imageData1 = UIImagePNGRepresentation(self), let imageData2 = UIImagePNGRepresentation(image) else { return false }
@@ -96,17 +109,20 @@ extension Image {
         let dataPtr1: UnsafePointer<UInt8> = CFDataGetBytePtr(data1)
         let dataPtr2: UnsafePointer<UInt8> = CFDataGetBytePtr(data2)
         
+        
+        var dismatchedLength = 0;
+        
         for index in 0..<length1 {
             let byte1 = dataPtr1[index]
             let byte2 = dataPtr2[index]
             let delta = UInt8(abs(Int(byte1) - Int(byte2)))
             
-            guard delta <= tolerance else {
-                return false
+            if delta > tolerance {
+                dismatchedLength += 1
             }
         }
         
-        return true
+        return dismatchedLength <= Int(tolerancePercent * Double(length1))
     }
     
     func rendered() -> Image? {
