@@ -47,7 +47,7 @@ CGImageRef __nullable CGImageCreateWithWebPData(CFDataRef __nonnull webpData)
     CGDataProviderRef provider = CGDataProviderCreateWithData(config, config->output.u.RGBA.rgba, config->output.u.RGBA.size, ReleaseWebPConfig);
     
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    CGBitmapInfo bitmapInfo = kCGImageAlphaPremultipliedLast;
+    CGBitmapInfo bitmapInfo = (CGBitmapInfo)kCGImageAlphaPremultipliedLast;
     CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
     
     CGImageRef image = CGImageCreate(config->input.width, config->input.height, 8, 32, config->output.u.RGBA.stride, colorSpace, bitmapInfo, provider, NULL, NO, renderingIntent);
@@ -66,7 +66,7 @@ CFDataRef WebPRepresentationDataCreateWithImage(CGImageRef image)
     size_t width = CGImageGetWidth(image);
     size_t height = CGImageGetHeight(image);
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    CGBitmapInfo bitmapInfo = kCGImageAlphaPremultipliedLast;
+    CGBitmapInfo bitmapInfo = (CGBitmapInfo)kCGImageAlphaPremultipliedLast;
     size_t bytesPerPixel = 4;
     CGContextRef context = CGBitmapContextCreate(NULL, width, height, 8, width * bytesPerPixel, colorSpace, bitmapInfo);
     
@@ -88,7 +88,7 @@ CFDataRef WebPRepresentationDataCreateWithImage(CGImageRef image)
     
     // Encode
     uint8_t *output;
-    size_t outputSize = WebPEncodeLosslessRGBA(CGBitmapContextGetData(context), width, height, width * bytesPerPixel, &output);
+    size_t outputSize = WebPEncodeLosslessRGBA(CGBitmapContextGetData(context), (int)width, (int)height, (int)(width * bytesPerPixel), &output);
     
     CGContextRelease(context);
     CGColorSpaceRelease(colorSpace);
