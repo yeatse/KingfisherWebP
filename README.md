@@ -1,15 +1,34 @@
 # KingfisherWebP
 
-[![CI Status](http://img.shields.io/travis/Yang Chao/KingfisherWebP.svg?style=flat)](https://travis-ci.org/Yang Chao/KingfisherWebP)
+[![CI Status](http://img.shields.io/travis/Yang Chao/KingfisherWebP.svg?style=flat)](https://travis-ci.org/yeatse/KingfisherWebP)
 [![Version](https://img.shields.io/cocoapods/v/KingfisherWebP.svg?style=flat)](http://cocoapods.org/pods/KingfisherWebP)
 [![License](https://img.shields.io/cocoapods/l/KingfisherWebP.svg?style=flat)](http://cocoapods.org/pods/KingfisherWebP)
 [![Platform](https://img.shields.io/cocoapods/p/KingfisherWebP.svg?style=flat)](http://cocoapods.org/pods/KingfisherWebP)
+
+# Description
+
+KingfisherWebP is an extension of the popular library [Kingfisher](https://github.com/onevcat/Kingfisher), providing a ImageProcessor and CacheSerializer for you to conveniently handle the WebP format.
+
+The library works seamlessly with `Kingfisher`. To display the webp images from network, simply add the `WebPProcessor` and `WebPSerializer` to your `KingfisherOptionsInfo`:
+
+```swift
+let url = URL(string: "url_of_your_webp_image")
+imageView.kf.setImage(with: url, options: [.processor(WebPProcessor.default), .cacheSerializer(WebPSerializer.default)])
+
+// or more concisely
+imageView.kf.setWebPImage(with: url)
+```
+
+If the image data is not in webp format, the default processor and serializer in `Kingfisher` will be used.
+
 
 ## Example
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
 ## Requirements
+
+iOS 8 or above
 
 ## Installation
 
