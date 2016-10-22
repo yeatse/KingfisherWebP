@@ -22,17 +22,15 @@ class KingfisherWebPTests: XCTestCase {
         let p = WebPProcessor.default
         XCTAssertEqual(p.identifier, "com.yeatse.WebPProcessor")
         
-        let resultImages = fileNames.map { (fileName) -> Image? in
+        fileNames.enumerated().forEach { (index, fileName) in
             let data = Data(fileName: fileName, extension: "webp")
-            return p.process(item: .data(data), options: [])
-        }
-        resultImages.enumerated().forEach { (index, image) in
-            XCTAssertNotNil(image)
+            let decodedImage = p.process(item: .data(data), options: [])
+            XCTAssertNotNil(decodedImage, fileName)
             
-            let data = Data(fileName: originalFileNames[index])
-            let originalImage = Image(data: data)!
+            let originalData = Data(fileName: originalFileNames[index])
+            let originalImage = Image(data: originalData)!
             
-            XCTAssertTrue(image!.renderEqual(to: originalImage), fileNames[index])
+            XCTAssertTrue(decodedImage!.renderEqual(to: originalImage), fileName)
         }
     }
     
@@ -52,26 +50,23 @@ class KingfisherWebPTests: XCTestCase {
     func testWebPSerializing() {
         let s = WebPSerializer.default
         
-        let images = originalFileNames.map { (fileName) -> Image in
-            let data = Data(fileName: fileName)
-            return Image(data: data)!
-        }
-        
-        images.enumerated().forEach { (index, image) in
-            let data1 = s.data(with: image, original: nil)
-            XCTAssertNotNil(data1)
+        originalFileNames.forEach { (fileName) in
+            let image = Image(data: Data(fileName: fileName))!
             
-            let encodedImage = s.image(with: data1!, options: [])
-            XCTAssertNotNil(encodedImage, originalFileNames[index])
+            let serializedData = s.data(with: image, original: nil)
+            XCTAssertNotNil(serializedData, fileName)
             
-            XCTAssertTrue(image.renderEqual(to: encodedImage!, tolerancePercent: 0.05), originalFileNames[index])
+            let encodedImage = s.image(with: serializedData!, options: [])
+            XCTAssertNotNil(encodedImage, fileName)
+            
+            XCTAssertTrue(image.renderEqual(to: encodedImage!, tolerancePercent: 0.05), fileName)
         }
     }
     
     func testDefaultSerializing() {
         let s = WebPSerializer.default
         
-        originalFileNames.enumerated().forEach { (index, fileName) in
+        originalFileNames.forEach { (fileName) in
             let data = Data(fileName: fileName)
             let image = Image(data: data)!
             
@@ -79,6 +74,26 @@ class KingfisherWebPTests: XCTestCase {
             let serializedData = s.data(with: image, original: data)
             
             XCTAssertEqual(defaultSerializedData, serializedData, fileName)
+        }
+    }
+    
+    func testEncodingPerformance() {
+        let s = WebPSerializer.default
+        let images = originalFileNames.map({ Image(data: Data(fileName: $0))! })
+        measure {
+            images.forEach({ (image) in
+                let _ = s.data(with: image, original: nil)
+            })
+        }
+    }
+    
+    func testDecodingperformance() {
+        let p = WebPProcessor.default
+        let dataList = fileNames.map({ Data(fileName: $0, extension: "webp") })
+        measure {
+            dataList.forEach({ (data) in
+                let _ = p.process(item: .data(data), options: [])
+            })
         }
     }
 }
