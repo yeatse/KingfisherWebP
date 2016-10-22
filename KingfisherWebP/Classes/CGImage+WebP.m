@@ -76,7 +76,7 @@ CFDataRef WebPRepresentationDataCreateWithImage(CGImageRef image)
     UInt8* bitmapData = (UInt8*)CGBitmapContextGetData(context);
     size_t pixelCount = width * height;
     
-    // Get real rgb from premultiplied one
+    // Get real rgb from premultiplied ones
     for (; pixelCount-- > 0; bitmapData += 4) {
         UInt8 alpha = bitmapData[3];
         if (alpha != UINT8_MAX) {

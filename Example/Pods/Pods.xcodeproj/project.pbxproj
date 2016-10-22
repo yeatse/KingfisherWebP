@@ -48,6 +48,7 @@
 		386C92BA1DB8925C009C22E0 /* CGImage+WebP.h in Headers */ = {isa = PBXBuildFile; fileRef = 386C92B81DB8925C009C22E0 /* CGImage+WebP.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		386C92BB1DB8925C009C22E0 /* CGImage+WebP.m in Sources */ = {isa = PBXBuildFile; fileRef = 386C92B91DB8925C009C22E0 /* CGImage+WebP.m */; };
 		386C92BD1DB8B794009C22E0 /* WebPSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386C92BC1DB8B794009C22E0 /* WebPSerializer.swift */; };
+		38843A8C1DBB61790055D670 /* Kingfisher+WebP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38843A8B1DBB61790055D670 /* Kingfisher+WebP.swift */; };
 		38D906FEE6D57EF0882AC0C5501FA249 /* color_cache.c in Sources */ = {isa = PBXBuildFile; fileRef = C3440A2FD0E6E9CA06E618CB7FFE0191 /* color_cache.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		39035CFA9584ECA50041D63D7EEAB706 /* random.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D6B38B88F1E154D65EF006DCE4784EC /* random.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3B2C12A3168B2E112C902A9989C7F9A6 /* analysis.c in Sources */ = {isa = PBXBuildFile; fileRef = A9F157B4E06CA4AA8FF2EAAD7F8517BB /* analysis.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
@@ -280,6 +281,7 @@
 		386C92B81DB8925C009C22E0 /* CGImage+WebP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CGImage+WebP.h"; sourceTree = "<group>"; };
 		386C92B91DB8925C009C22E0 /* CGImage+WebP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CGImage+WebP.m"; sourceTree = "<group>"; };
 		386C92BC1DB8B794009C22E0 /* WebPSerializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebPSerializer.swift; sourceTree = "<group>"; };
+		38843A8B1DBB61790055D670 /* Kingfisher+WebP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Kingfisher+WebP.swift"; sourceTree = "<group>"; };
 		38B010AF013BBFBF1F073C036ACAE44F /* Kingfisher.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Kingfisher.xcconfig; sourceTree = "<group>"; };
 		3C64DDA5D91E3ED7E9C941648D78E2AE /* rescaler_mips32.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = rescaler_mips32.c; path = src/dsp/rescaler_mips32.c; sourceTree = "<group>"; };
 		3CA2F160B6ABED42B6ED5E15BDD843F6 /* KingfisherWebP.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = KingfisherWebP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -848,6 +850,7 @@
 				9AA0632059A802CD4DED697E7A5CD3AA /* Image+WebP.swift */,
 				98F27D552F62F949A76455036522BE9D /* WebPProcessor.swift */,
 				386C92BC1DB8B794009C22E0 /* WebPSerializer.swift */,
+				38843A8B1DBB61790055D670 /* Kingfisher+WebP.swift */,
 				386C92B81DB8925C009C22E0 /* CGImage+WebP.h */,
 				386C92B91DB8925C009C22E0 /* CGImage+WebP.m */,
 			);
@@ -1056,6 +1059,7 @@
 				0027DD490E299D0063BBC49A9F2B2D13 /* Image+WebP.swift in Sources */,
 				12ADE12907EB05D867A1FA0DCCB6D25E /* WebPProcessor.swift in Sources */,
 				386C92BD1DB8B794009C22E0 /* WebPSerializer.swift in Sources */,
+				38843A8C1DBB61790055D670 /* Kingfisher+WebP.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
