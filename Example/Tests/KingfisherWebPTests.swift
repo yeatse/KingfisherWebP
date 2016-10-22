@@ -18,23 +18,63 @@ class KingfisherWebPTests: XCTestCase {
         super.tearDown()
     }
     
-    func testProcessor() {
+    func testWebPDecoding() {
         let p = WebPProcessor.default
         XCTAssertEqual(p.identifier, "com.yeatse.WebPProcessor")
         
         let resultImages = fileNames.map { (fileName) -> Image? in
-            let url = Bundle(for: KingfisherWebPTests.self).url(forResource: fileName, withExtension: "webp")!
-            let data = try! Data(contentsOf: url)
+            let data = Data(fileName: fileName, extension: "webp")
             return p.process(item: .data(data), options: [])
         }
         resultImages.enumerated().forEach { (index, image) in
             XCTAssertNotNil(image)
             
-            let path = Bundle(for: KingfisherWebPTests.self).path(forResource: originalFileNames[index], ofType: nil)!
-            let originalImage = Image(contentsOfFile: path)!
+            let data = Data(fileName: originalFileNames[index])
+            let originalImage = Image(data: data)!
             
             XCTAssertTrue(image!.renderEqual(to: originalImage), fileNames[index])
         }
+    }
+    
+    func testDefaultDecoding() {
+        let p = WebPProcessor.default
+        XCTAssertEqual(p.identifier, "com.yeatse.WebPProcessor")
+        
+        originalFileNames.forEach { (fileName) in
+            let data = Data(fileName: fileName)
+            let image1 = p.process(item: .data(data), options: [])!
+            let image2 = Image(data: data)!
+            
+            XCTAssertTrue(image1.renderEqual(to: image2), fileName)
+        }
+    }
+    
+    func testWebPSerializing() {
+        let s = WebPSerializer.default
+        let images = originalFileNames.map { (fileName) -> Image in
+            let data = Data(fileName: fileName)
+            return Image(data: data)!
+        }
+        images.enumerated().forEach { (index, image) in
+            let data1 = s.data(with: image, original: nil)
+            XCTAssertNotNil(data1)
+            
+            let encodedImage = s.image(with: data1!, options: [])
+            XCTAssertNotNil(encodedImage, originalFileNames[index])
+            
+            XCTAssertTrue(image.renderEqual(to: encodedImage!), originalFileNames[index])
+        }
+    }
+    
+    func testSerializer() {
+    }
+}
+
+// MARK: - Helper
+extension Data {
+    init(fileName: String, extension: String? = nil) {
+        let url = Bundle(for: KingfisherWebPTests.self).url(forResource: fileName, withExtension: `extension`)!
+        try! self.init(contentsOf: url)
     }
 }
 

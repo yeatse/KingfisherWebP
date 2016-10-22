@@ -14,7 +14,11 @@ public struct WebPSerializer: CacheSerializer {
     private init() {}
     
     public func data(with image: Image, original: Data?) -> Data? {
-        return image.kf.normalized.kf.webpRepresentation() ?? DefaultCacheSerializer.default.data(with: image, original: original)
+        if let original = original, !original.isWebPFormat {
+            return DefaultCacheSerializer.default.data(with: image, original: original)
+        } else {
+            return image.kf.normalized.kf.webpRepresentation()
+        }
     }
     
     public func image(with data: Data, options: KingfisherOptionsInfo?) -> Image? {

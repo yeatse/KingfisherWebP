@@ -26,18 +26,18 @@ CGImageRef __nullable CGImageCreateWithWebPData(CFDataRef __nonnull webpData)
         buffer = WebPDecodeRGB(CFDataGetBytePtr(webpData), CFDataGetLength(webpData), &width, &height);
     }
     
-    size_t components = features.has_alpha ? 4 : 3;
+    size_t bytesPerPixel = features.has_alpha ? 4 : 3;
     
     // create image provider on output of webp decoder
-    CFDataRef decodedData = CFDataCreate(kCFAllocatorDefault, buffer, width * height * components);
+    CFDataRef decodedData = CFDataCreate(kCFAllocatorDefault, buffer, width * height * bytesPerPixel);
     WebPFree(buffer);
     CGDataProviderRef provider = CGDataProviderCreateWithCFData(decodedData);
     
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    CGBitmapInfo bitmapInfo = features.has_alpha ? kCGImageAlphaPremultipliedLast : kCGImageAlphaNone;
+    CGBitmapInfo bitmapInfo = features.has_alpha ? kCGImageAlphaLast : kCGImageAlphaNone;
     CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
     
-    CGImageRef image = CGImageCreate(width, height, 8, components * 8, width * components, colorSpace, bitmapInfo, provider, NULL, NO, renderingIntent);
+    CGImageRef image = CGImageCreate(width, height, 8, bytesPerPixel * 8, width * bytesPerPixel, colorSpace, bitmapInfo, provider, NULL, NO, renderingIntent);
     
     // clean up
     CGColorSpaceRelease(colorSpace); 
@@ -50,32 +50,36 @@ CGImageRef __nullable CGImageCreateWithWebPData(CFDataRef __nonnull webpData)
 
 CFDataRef WebPRepresentationDataCreateWithImage(CGImageRef image)
 {
-    CGColorSpaceRef colorSpace = CGImageGetColorSpace(image);
-    if (CGColorSpaceGetModel(colorSpace) != kCGColorSpaceModelRGB) {
-        return NULL;
-    }
-    
-    CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(image);
-    if (alphaInfo != kCGImageAlphaNone && alphaInfo != kCGImageAlphaPremultipliedLast) {
-        return NULL;
-    }
-    
-    CGDataProviderRef dataProvider = CGImageGetDataProvider(image);
-    CFDataRef imageData = CGDataProviderCopyData(dataProvider);
-    const UInt8 *rawData = CFDataGetBytePtr(imageData);
-    
+    // Create an rgba bitmap context
     size_t width = CGImageGetWidth(image);
     size_t height = CGImageGetHeight(image);
-    size_t stride = CGImageGetBytesPerRow(image);
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGBitmapInfo bitmapInfo = kCGImageAlphaPremultipliedLast;
+    size_t bytesPerPixel = 4;
+    CGContextRef context = CGBitmapContextCreate(NULL, width, height, 8, width * bytesPerPixel, colorSpace, bitmapInfo);
     
-    uint8_t *output;
-    size_t outputSize;
-    if (alphaInfo == kCGImageAlphaNone) {
-        outputSize = WebPEncodeLosslessRGB(rawData, width, height, stride, &output);
-    } else {
-        outputSize = WebPEncodeLosslessRGBA(rawData, width, height, stride, &output);
+    // Render image into the context
+    CGContextDrawImage(context, CGRectMake(0, 0, width, height), image);
+    
+    UInt8* bitmapData = (UInt8*)CGBitmapContextGetData(context);
+    
+    // Get real rgb from premultiplied one
+    for (int i = 0; i < width * height * bytesPerPixel; i += bytesPerPixel) {
+        UInt8 alpha = bitmapData[i + 3];
+        if (alpha == 0 || alpha == UINT8_MAX) {
+            continue;
+        }
+        bitmapData[i] = (UInt8)round(bitmapData[i] * 255.0 / alpha);
+        bitmapData[i + 1] = (UInt8)round(bitmapData[i] * 255.0 / alpha);
+        bitmapData[i + 2] = (UInt8)round(bitmapData[i] * 255.0 / alpha);
     }
-    CFRelease(imageData);
+    
+    // Encode
+    uint8_t *output;
+    size_t outputSize = WebPEncodeLosslessRGBA(bitmapData, width, height, width * bytesPerPixel, &output);
+    
+    CGContextRelease(context);
+    CGColorSpaceRelease(colorSpace);
     
     CFDataRef data = CFDataCreate(kCFAllocatorDefault, output, outputSize);
     WebPFree(output);
