@@ -10,13 +10,7 @@
 #import "webp/decode.h"
 #import "webp/encode.h"
 
-static inline UInt8 MulDiv255Round(UInt16 a, UInt16 b)
-{
-    unsigned prod = a * b + 128;
-    return (prod + (prod >> 8)) >> 8;
-}
-
-void ReleaseWebPConfig(void *info, const void *data, size_t size)
+static void ReleaseWebPConfig(void *info, const void *data, size_t size)
 {
     WebPDecoderConfig* config = (WebPDecoderConfig*)info;
     WebPFreeDecBuffer(&config->output);
@@ -79,10 +73,10 @@ CFDataRef WebPRepresentationDataCreateWithImage(CGImageRef image)
     // Get real rgb from premultiplied ones
     for (; pixelCount-- > 0; bitmapData += 4) {
         UInt8 alpha = bitmapData[3];
-        if (alpha != UINT8_MAX) {
-            bitmapData[0] = MulDiv255Round(bitmapData[0], alpha);
-            bitmapData[1] = MulDiv255Round(bitmapData[1], alpha);
-            bitmapData[2] = MulDiv255Round(bitmapData[2], alpha);
+        if (alpha != UINT8_MAX && alpha != 0) {
+            bitmapData[0] = (UInt8)(((unsigned)bitmapData[0] * UINT8_MAX + alpha / 2) / alpha);
+            bitmapData[1] = (UInt8)(((unsigned)bitmapData[1] * UINT8_MAX + alpha / 2) / alpha);
+            bitmapData[2] = (UInt8)(((unsigned)bitmapData[2] * UINT8_MAX + alpha / 2) / alpha);
         }
     }
     

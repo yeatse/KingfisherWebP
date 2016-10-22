@@ -59,7 +59,7 @@ class KingfisherWebPTests: XCTestCase {
             let encodedImage = s.image(with: serializedData!, options: [])
             XCTAssertNotNil(encodedImage, fileName)
             
-            XCTAssertTrue(image.renderEqual(to: encodedImage!, tolerancePercent: 0.05), fileName)
+            XCTAssertTrue(image.renderEqual(to: encodedImage!), fileName)
         }
     }
     
