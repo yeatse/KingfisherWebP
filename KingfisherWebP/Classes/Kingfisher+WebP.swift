@@ -9,7 +9,7 @@
 import Kingfisher
 
 extension Kingfisher where Base: ImageView {
-    
+
     @discardableResult
     public func setWebPImage(with resource: Resource?,
                              placeholder: Image? = nil,
