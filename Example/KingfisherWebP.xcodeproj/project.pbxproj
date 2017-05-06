@@ -14,6 +14,8 @@
 		383E63E61DB920BE0041CE17 /* kingfisher.webp in Resources */ = {isa = PBXBuildFile; fileRef = 383E63E01DB920BE0041CE17 /* kingfisher.webp */; };
 		383E63E71DB920BE0041CE17 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 383E63E11DB920BE0041CE17 /* logo.png */; };
 		383E63E81DB920BE0041CE17 /* logo.webp in Resources */ = {isa = PBXBuildFile; fileRef = 383E63E21DB920BE0041CE17 /* logo.webp */; };
+		537689F31EBE979300D45CB4 /* animation.gif in Resources */ = {isa = PBXBuildFile; fileRef = 537689F11EBE979300D45CB4 /* animation.gif */; };
+		537689F41EBE979300D45CB4 /* animation.webp in Resources */ = {isa = PBXBuildFile; fileRef = 537689F21EBE979300D45CB4 /* animation.webp */; };
 		607FACEC1AFB9204008FA782 /* KingfisherWebPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* KingfisherWebPTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +30,8 @@
 		383E63E11DB920BE0041CE17 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		383E63E21DB920BE0041CE17 /* logo.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = logo.webp; sourceTree = "<group>"; };
 		383E63ED1DB92CB20041CE17 /* KingfisherWebPExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KingfisherWebPExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		537689F11EBE979300D45CB4 /* animation.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = animation.gif; sourceTree = "<group>"; };
+		537689F21EBE979300D45CB4 /* animation.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = animation.webp; sourceTree = "<group>"; };
 		607FACE51AFB9204008FA782 /* KingfisherWebP_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KingfisherWebP_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* KingfisherWebPTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KingfisherWebPTests.swift; sourceTree = "<group>"; };
@@ -75,6 +79,8 @@
 		383E63DC1DB920BE0041CE17 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				537689F11EBE979300D45CB4 /* animation.gif */,
+				537689F21EBE979300D45CB4 /* animation.webp */,
 				383E63DD1DB920BE0041CE17 /* cover.png */,
 				383E63DE1DB920BE0041CE17 /* cover.webp */,
 				383E63DF1DB920BE0041CE17 /* kingfisher.jpg */,
@@ -225,6 +231,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				383E63E51DB920BE0041CE17 /* kingfisher.jpg in Resources */,
+				537689F31EBE979300D45CB4 /* animation.gif in Resources */,
+				537689F41EBE979300D45CB4 /* animation.webp in Resources */,
 				383E63E71DB920BE0041CE17 /* logo.png in Resources */,
 				383E63E61DB920BE0041CE17 /* kingfisher.webp in Resources */,
 				383E63E31DB920BE0041CE17 /* cover.png in Resources */,

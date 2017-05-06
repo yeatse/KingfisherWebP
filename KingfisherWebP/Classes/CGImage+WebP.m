@@ -7,52 +7,168 @@
 //
 
 #import "CGImage+WebP.h"
+
+#import <Accelerate/Accelerate.h>
+
 #import "webp/decode.h"
 #import "webp/encode.h"
+#import "webp/demux.h"
 
-static void ReleaseWebPConfig(void *info, const void *data, size_t size)
-{
-    WebPDecoderConfig* config = (WebPDecoderConfig*)info;
-    WebPFreeDecBuffer(&config->output);
-    free(config);
+#pragma mark - Perfomance Settings
+const BOOL useThreads = true; //speed up 23%
+const BOOL bypassFiltering = false; //speed up 11%, cause some banding
+const BOOL noFancyUpsampling = false; //speed down 16%, lose some details
+
+#pragma mark - Helper Functions
+
+/// Returns byte-aligned size.
+static inline size_t ImageByteAlign(size_t size, size_t alignment) {
+    return ((size + (alignment - 1)) / alignment) * alignment;
 }
 
-CGImageRef __nullable CGImageCreateWithWebPData(CFDataRef __nonnull webpData)
-{
-    WebPDecoderConfig* config = (WebPDecoderConfig*)malloc(sizeof(WebPDecoderConfig));
-    if (!WebPInitDecoderConfig(config)) {
-        free(config);
-        return NULL;
+static void ReleaseDataCallback(void *info, const void *data, size_t size) {
+    if (info) free(info);
+}
+
+CGColorSpaceRef GetDeviceRGB_CGColorSpace() {
+    static CGColorSpaceRef space;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        space = CGColorSpaceCreateDeviceRGB();
+    });
+    return space;
+}
+
+#pragma mark - Decode Functions
+
+NSUInteger GetWebPFrameCount(CFDataRef webpData) {
+    if (!webpData || CFDataGetLength(webpData) == 0) return 0;
+
+    WebPData data = {CFDataGetBytePtr(webpData), CFDataGetLength(webpData)};
+    WebPDemuxer *demuxer = WebPDemux(&data);
+    if (!demuxer) return 0;
+    NSUInteger webpFrameCount = WebPDemuxGetI(demuxer, WEBP_FF_FRAME_COUNT);
+    WebPDemuxDelete(demuxer);
+    return webpFrameCount;
+}
+
+#define FAIL_CGImageCreateWithWebPData \
+    { \
+        if (destBytes) free(destBytes); \
+        if (provider) CFRelease(provider); \
+        if (iterInited) WebPDemuxReleaseIterator(&iter); \
+        if (demuxer) WebPDemuxDelete(demuxer); \
+        return NULL; \
     }
 
-    if (WebPGetFeatures(CFDataGetBytePtr(webpData), CFDataGetLength(webpData), &config->input) != VP8_STATUS_OK) {
-        free(config);
-        return NULL;
-    }
+CGImageRef __nullable CGImageCreateWithWebPData(CFDataRef __nonnull webpData) {
+    /*
+     Call WebPDecode() on a multi-frame webp data will get an error (VP8_STATUS_UNSUPPORTED_FEATURE).
+     Use WebPDemuxer to unpack it first.
+     */
+    WebPData data = {0};
+    WebPDemuxer *demuxer = NULL;
 
-    config->options.use_threads = 1;
-    config->output.colorspace = MODE_rgbA;
+    int frameCount = 0, canvasWidth = 0, canvasHeight = 0;
+    WebPIterator iter = {0};
+    BOOL iterInited = NO;
+    const uint8_t *payload = NULL;
+    size_t payloadSize = 0;
+    WebPDecoderConfig config = {0};
 
-    if (WebPDecode(CFDataGetBytePtr(webpData), CFDataGetLength(webpData), config) != VP8_STATUS_OK) {
-        free(config);
-        return NULL;
-    }
-
-    CGDataProviderRef provider = CGDataProviderCreateWithData(config, config->output.u.RGBA.rgba, config->output.u.RGBA.size, ReleaseWebPConfig);
-
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    BOOL hasAlpha = NO;
+    const size_t bitsPerComponent = 8, bitsPerPixel = 32;
+    size_t bytesPerRow = 0, destLength = 0;
     CGBitmapInfo bitmapInfo = (CGBitmapInfo)kCGImageAlphaPremultipliedLast;
-    CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
 
-    CGImageRef image = CGImageCreate(config->input.width, config->input.height, 8, 32, config->output.u.RGBA.stride, colorSpace, bitmapInfo, provider, NULL, NO, renderingIntent);
+    void *destBytes = NULL;
+    CGDataProviderRef provider = NULL;
+    CGImageRef imageRef = NULL;
 
-    // clean up
-    CGColorSpaceRelease(colorSpace);
-    CGDataProviderRelease(provider);
+    if (!webpData || CFDataGetLength(webpData) == 0) return NULL;
+    data.bytes = CFDataGetBytePtr(webpData);
+    data.size = CFDataGetLength(webpData);
+    demuxer = WebPDemux(&data);
+    if (!demuxer) FAIL_CGImageCreateWithWebPData;
 
-    return image;
+    frameCount = WebPDemuxGetI(demuxer, WEBP_FF_FRAME_COUNT);
+    if (frameCount == 0) {
+        FAIL_CGImageCreateWithWebPData;
+
+    } else if (frameCount == 1) { // single-frame
+        payload = data.bytes;
+        payloadSize = data.size;
+        if (!WebPInitDecoderConfig(&config)) FAIL_CGImageCreateWithWebPData;
+        if (WebPGetFeatures(payload , payloadSize, &config.input) != VP8_STATUS_OK) FAIL_CGImageCreateWithWebPData;
+        canvasWidth = config.input.width;
+        canvasHeight = config.input.height;
+
+    } else { // multi-frame
+        canvasWidth = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_WIDTH);
+        canvasHeight = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_HEIGHT);
+        if (canvasWidth < 1 || canvasHeight < 1) FAIL_CGImageCreateWithWebPData;
+
+        if (!WebPDemuxGetFrame(demuxer, 1, &iter)) FAIL_CGImageCreateWithWebPData;
+        iterInited = YES;
+
+        if (iter.width > canvasWidth || iter.height > canvasHeight) FAIL_CGImageCreateWithWebPData;
+        payload = iter.fragment.bytes;
+        payloadSize = iter.fragment.size;
+
+        if (!WebPInitDecoderConfig(&config)) FAIL_CGImageCreateWithWebPData;
+        if (WebPGetFeatures(payload , payloadSize, &config.input) != VP8_STATUS_OK) FAIL_CGImageCreateWithWebPData;
+    }
+    if (payload == NULL || payloadSize == 0) FAIL_CGImageCreateWithWebPData;
+
+    hasAlpha = config.input.has_alpha;
+    bytesPerRow = ImageByteAlign(bitsPerPixel / 8 * canvasWidth, 32);
+    destLength = bytesPerRow * canvasHeight;
+
+    destBytes = calloc(1, destLength);
+    if (!destBytes) FAIL_CGImageCreateWithWebPData;
+
+    config.options.use_threads = useThreads;
+    config.options.bypass_filtering = bypassFiltering;
+    config.options.no_fancy_upsampling = noFancyUpsampling;
+
+    config.output.colorspace = MODE_rgbA;
+    config.output.is_external_memory = 1;
+    config.output.u.RGBA.rgba = destBytes;
+    config.output.u.RGBA.stride = (int)bytesPerRow;
+    config.output.u.RGBA.size = destLength;
+
+    VP8StatusCode result = WebPDecode(payload, payloadSize, &config);
+    if ((result != VP8_STATUS_OK) && (result != VP8_STATUS_NOT_ENOUGH_DATA)) FAIL_CGImageCreateWithWebPData;
+
+    if (iter.x_offset != 0 || iter.y_offset != 0) {
+        void *tmp = calloc(1, destLength);
+        if (tmp) {
+            vImage_Buffer src = {destBytes, canvasHeight, canvasWidth, bytesPerRow};
+            vImage_Buffer dest = {tmp, canvasHeight, canvasWidth, bytesPerRow};
+            vImage_CGAffineTransform transform = {1, 0, 0, 1, iter.x_offset, -iter.y_offset};
+            uint8_t backColor[4] = {0};
+            vImageAffineWarpCG_ARGB8888(&src, &dest, NULL, &transform, backColor, kvImageBackgroundColorFill);
+            memcpy(destBytes, tmp, destLength);
+            free(tmp);
+        }
+    }
+
+    provider = CGDataProviderCreateWithData(destBytes, destBytes, destLength, ReleaseDataCallback);
+    if (!provider) FAIL_CGImageCreateWithWebPData;
+    destBytes = NULL; // hold by provider
+
+    imageRef = CGImageCreate(canvasWidth, canvasHeight, bitsPerComponent, bitsPerPixel, bytesPerRow, GetDeviceRGB_CGColorSpace(), bitmapInfo, provider, NULL, false, kCGRenderingIntentDefault);
+
+    CFRelease(provider);
+    if (iterInited) WebPDemuxReleaseIterator(&iter);
+    WebPDemuxDelete(demuxer);
+
+    return imageRef;
 }
 
+#undef FAIL_CGImageCreateWithWebPData
+
+#pragma mark - Encode Functions
 
 CFDataRef WebPRepresentationDataCreateWithImage(CGImageRef image)
 {
