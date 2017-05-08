@@ -15,6 +15,7 @@
 #import "webp/demux.h"
 
 #pragma mark - Perfomance Settings
+
 const BOOL useThreads = true; //speed up 23%
 const BOOL bypassFiltering = false; //speed up 11%, cause some banding
 const BOOL noFancyUpsampling = false; //speed down 16%, lose some details
@@ -53,13 +54,13 @@ NSUInteger GetWebPFrameCount(CFDataRef webpData) {
 }
 
 #define FAIL_CGImageCreateWithWebPData \
-    { \
-        if (destBytes) free(destBytes); \
-        if (provider) CFRelease(provider); \
-        if (iterInited) WebPDemuxReleaseIterator(&iter); \
-        if (demuxer) WebPDemuxDelete(demuxer); \
-        return NULL; \
-    }
+{ \
+if (destBytes) free(destBytes); \
+if (provider) CFRelease(provider); \
+if (iterInited) WebPDemuxReleaseIterator(&iter); \
+if (demuxer) WebPDemuxDelete(demuxer); \
+return NULL; \
+}
 
 CGImageRef __nullable CGImageCreateWithWebPData(CFDataRef __nonnull webpData) {
     /*
@@ -205,6 +206,6 @@ CFDataRef WebPRepresentationDataCreateWithImage(CGImageRef image)
 
     CFDataRef data = CFDataCreate(kCFAllocatorDefault, output, outputSize);
     WebPFree(output);
-
+    
     return data;
 }
