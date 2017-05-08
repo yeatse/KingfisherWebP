@@ -8,8 +8,6 @@
 
 #import "CGImage+WebP.h"
 
-#import <Accelerate/Accelerate.h>
-
 #import "webp/decode.h"
 #import "webp/encode.h"
 #import "webp/demux.h"
@@ -36,7 +34,7 @@ CGColorSpaceRef GetDeviceRGB_CGColorSpace() {
 
 #pragma mark - Decode Functions
 
-NSUInteger GetWebPFrameCount(CFDataRef webpData) {
+NSUInteger GetWebPFrameCount(CFDataRef __nullable webpData) {
     if (!webpData || CFDataGetLength(webpData) == 0) return 0;
 
     WebPData data = {CFDataGetBytePtr(webpData), CFDataGetLength(webpData)};
@@ -50,17 +48,12 @@ NSUInteger GetWebPFrameCount(CFDataRef webpData) {
 #define FAIL_CGImageCreateWithWebPData \
 { \
 if (destBytes) free(destBytes); \
-if (provider) CFRelease(provider); \
 if (iterInited) WebPDemuxReleaseIterator(&iter); \
 if (demuxer) WebPDemuxDelete(demuxer); \
 return NULL; \
 }
 
 CGImageRef __nullable CGImageCreateWithWebPData(CFDataRef __nullable webpData, BOOL useThreads, BOOL bypassFiltering, BOOL noFancyUpsampling) {
-    /*
-     Call WebPDecode() on a multi-frame webp data will get an error (VP8_STATUS_UNSUPPORTED_FEATURE).
-     Use WebPDemuxer to unpack it first.
-     */
     WebPData data = {0};
     WebPDemuxer *demuxer = NULL;
 
@@ -71,14 +64,11 @@ CGImageRef __nullable CGImageCreateWithWebPData(CFDataRef __nullable webpData, B
     size_t payloadSize = 0;
     WebPDecoderConfig config = {0};
 
-    BOOL hasAlpha = NO;
     const size_t bitsPerComponent = 8, bitsPerPixel = 32;
     size_t bytesPerRow = 0, destLength = 0;
     CGBitmapInfo bitmapInfo = (CGBitmapInfo)kCGImageAlphaPremultipliedLast;
 
     void *destBytes = NULL;
-    CGDataProviderRef provider = NULL;
-    CGImageRef imageRef = NULL;
 
     if (!webpData || CFDataGetLength(webpData) == 0) return NULL;
     data.bytes = CFDataGetBytePtr(webpData);
@@ -86,6 +76,9 @@ CGImageRef __nullable CGImageCreateWithWebPData(CFDataRef __nullable webpData, B
     demuxer = WebPDemux(&data);
     if (!demuxer) FAIL_CGImageCreateWithWebPData;
 
+    // Call WebPDecode() on a multi-frame webp data will get an error (VP8_STATUS_UNSUPPORTED_FEATURE).
+    
+    // Use WebPDemuxer to unpack it first.
     frameCount = WebPDemuxGetI(demuxer, WEBP_FF_FRAME_COUNT);
     if (frameCount == 0) {
         FAIL_CGImageCreateWithWebPData;
@@ -115,7 +108,6 @@ CGImageRef __nullable CGImageCreateWithWebPData(CFDataRef __nullable webpData, B
     }
     if (payload == NULL || payloadSize == 0) FAIL_CGImageCreateWithWebPData;
 
-    hasAlpha = config.input.has_alpha;
     bytesPerRow = ImageByteAlign(bitsPerPixel / 8 * canvasWidth, 32);
     destLength = bytesPerRow * canvasHeight;
 
@@ -135,26 +127,18 @@ CGImageRef __nullable CGImageCreateWithWebPData(CFDataRef __nullable webpData, B
     VP8StatusCode result = WebPDecode(payload, payloadSize, &config);
     if ((result != VP8_STATUS_OK) && (result != VP8_STATUS_NOT_ENOUGH_DATA)) FAIL_CGImageCreateWithWebPData;
 
-    if (iter.x_offset != 0 || iter.y_offset != 0) {
-        void *tmp = calloc(1, destLength);
-        if (tmp) {
-            vImage_Buffer src = {destBytes, canvasHeight, canvasWidth, bytesPerRow};
-            vImage_Buffer dest = {tmp, canvasHeight, canvasWidth, bytesPerRow};
-            vImage_CGAffineTransform transform = {1, 0, 0, 1, iter.x_offset, -iter.y_offset};
-            uint8_t backColor[4] = {0};
-            vImageAffineWarpCG_ARGB8888(&src, &dest, NULL, &transform, backColor, kvImageBackgroundColorFill);
-            memcpy(destBytes, tmp, destLength);
-            free(tmp);
-        }
-    }
+    CGDataProviderRef provider = CGDataProviderCreateWithData(destBytes, config.output.u.RGBA.rgba, config.output.u.RGBA.size, ReleaseDataCallback);
+    destBytes = NULL;
 
-    provider = CGDataProviderCreateWithData(destBytes, destBytes, destLength, ReleaseDataCallback);
-    if (!provider) FAIL_CGImageCreateWithWebPData;
-    destBytes = NULL; // hold by provider
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
 
-    imageRef = CGImageCreate(canvasWidth, canvasHeight, bitsPerComponent, bitsPerPixel, bytesPerRow, GetDeviceRGB_CGColorSpace(), bitmapInfo, provider, NULL, false, kCGRenderingIntentDefault);
+    CGImageRef imageRef = CGImageCreate(canvasWidth, canvasHeight, bitsPerComponent, bitsPerPixel, bytesPerRow, GetDeviceRGB_CGColorSpace(), bitmapInfo, provider, NULL, false, renderingIntent);
 
-    CFRelease(provider);
+    // clean up
+    CGColorSpaceRelease(colorSpace);
+    CGDataProviderRelease(provider);
+
     if (iterInited) WebPDemuxReleaseIterator(&iter);
     WebPDemuxDelete(demuxer);
 
