@@ -21,7 +21,11 @@ extension Kingfisher where Base: Image {
 // MARK: - Create image from WebP data
 extension Kingfisher where Base: Image {
     static func image(webpData: Data, scale: CGFloat) -> Image? {
-        guard let cgImage = CGImageCreateWithWebPData(webpData as CFData) else {
+        let useThreads = true; //speed up 23%
+        let bypassFiltering = false; //speed up 11%, cause some banding
+        let noFancyUpsampling = false; //speed down 16%, lose some details
+
+        guard let cgImage = CGImageCreateWithWebPData(  webpData as CFData, useThreads, bypassFiltering, noFancyUpsampling) else {
             return nil;
         }
 

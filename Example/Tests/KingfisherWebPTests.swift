@@ -5,8 +5,11 @@ import Kingfisher
 
 class KingfisherWebPTests: XCTestCase {
 
-    let fileNames = ["cover", "kingfisher", "logo"]
-    let originalFileNames = ["cover.png", "kingfisher.jpg", "logo.png"]
+    let animationFileNames = ["animation"]
+    let animationOriginalFileNames = ["animation.gif"]
+
+    let fileNames = ["cover", "kingfisher", "logo", "animation"]
+    let originalFileNames = ["cover.png", "kingfisher.jpg", "logo.png", "animation.gif"]
 
     override func setUp() {
         super.setUp()
@@ -34,6 +37,23 @@ class KingfisherWebPTests: XCTestCase {
         }
     }
 
+    func testWebPAnimationDecoding() {
+        let p = WebPProcessor.default
+        XCTAssertEqual(p.identifier, "com.yeatse.WebPProcessor")
+
+        // TODO: Iterate on all frames of decoded animations for comparison
+        animationFileNames.enumerated().forEach { (index, fileName) in
+            let data = Data(fileName: fileName, extension: "webp")
+            let decodedImage = p.process(item: .data(data), options: [])
+            XCTAssertNotNil(decodedImage, fileName)
+
+            let originalData = Data(fileName: animationOriginalFileNames[index])
+            let originalImage = Image(data: originalData)!
+
+            XCTAssertTrue(decodedImage!.renderEqual(to: originalImage), fileName)
+        }
+    }
+
     func testDefaultDecoding() {
         let p = WebPProcessor.default
         XCTAssertEqual(p.identifier, "com.yeatse.WebPProcessor")
@@ -51,6 +71,23 @@ class KingfisherWebPTests: XCTestCase {
         let s = WebPSerializer.default
 
         originalFileNames.forEach { (fileName) in
+            let image = Image(data: Data(fileName: fileName))!
+
+            let serializedData = s.data(with: image, original: nil)
+            XCTAssertNotNil(serializedData, fileName)
+
+            let encodedImage = s.image(with: serializedData!, options: [])
+            XCTAssertNotNil(encodedImage, fileName)
+
+            XCTAssertTrue(image.renderEqual(to: encodedImage!), fileName)
+        }
+    }
+
+    func testWebPAnimationSerializing() {
+        let s = WebPSerializer.default
+
+        // TODO: Iterate on all frames
+        animationOriginalFileNames.forEach { (fileName) in
             let image = Image(data: Data(fileName: fileName))!
 
             let serializedData = s.data(with: image, original: nil)
