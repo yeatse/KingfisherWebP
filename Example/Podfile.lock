@@ -1,5 +1,5 @@
 PODS:
-  - Kingfisher (3.6.2)
+  - Kingfisher (3.7.2)
   - KingfisherWebP (0.2.2):
     - Kingfisher (~> 3.0)
     - libwebp
@@ -36,7 +36,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Kingfisher: 2c94e72c6830622c71d06adf4ea024c37d316830
+  Kingfisher: 5ddc4ac715615cc200de9fdc54ab1511061ea650
   KingfisherWebP: 7a8c29698a2596bb16b4915a9d7a97b825011705
   libwebp: 1d5a07c2eb97f9c31bd5f154bb82efc0ea67c6a2
 
