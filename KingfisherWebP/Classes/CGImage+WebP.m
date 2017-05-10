@@ -34,7 +34,7 @@ CGColorSpaceRef GetDeviceRGB_CGColorSpace() {
 
 #pragma mark - Decode Functions
 
-NSUInteger GetWebPFrameCount(CFDataRef __nullable webpData) {
+NSUInteger WebPDataGetFrameCount(CFDataRef __nullable webpData) {
     if (!webpData || CFDataGetLength(webpData) == 0) return 0;
 
     WebPData data = {CFDataGetBytePtr(webpData), CFDataGetLength(webpData)};
@@ -130,13 +130,11 @@ CGImageRef __nullable CGImageCreateWithWebPData(CFDataRef __nullable webpData, B
     CGDataProviderRef provider = CGDataProviderCreateWithData(destBytes, config.output.u.RGBA.rgba, config.output.u.RGBA.size, ReleaseDataCallback);
     destBytes = NULL;
 
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
 
     CGImageRef imageRef = CGImageCreate(canvasWidth, canvasHeight, bitsPerComponent, bitsPerPixel, bytesPerRow, GetDeviceRGB_CGColorSpace(), bitmapInfo, provider, NULL, false, renderingIntent);
 
     // clean up
-    CGColorSpaceRelease(colorSpace);
     CGDataProviderRelease(provider);
 
     if (iterInited) WebPDemuxReleaseIterator(&iter);
