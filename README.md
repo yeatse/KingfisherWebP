@@ -16,10 +16,14 @@ let url = URL(string: "url_of_your_webp_image")
 imageView.kf.setImage(with: url, options: [.processor(WebPProcessor.default), .cacheSerializer(WebPSerializer.default)])
 ```
 
-... or more concisely:
+For convenience, you may set it as a global default option to all `KingfisherManager` related methods:
 
-```
-imageView.kf.setWebPImage(with: url)
+```swift
+// somewhere after your application launches...
+KingfisherManager.shared.defaultOptions = [.processor(WebPProcessor.default), .cacheSerializer(WebPSerializer.default)]
+
+// You can now use webp in Kingfisher like any other format
+imageView.kf.setImage(with: url)
 ```
 
 If the image data is not in webp format, the default processor and serializer in `Kingfisher` will be used.
