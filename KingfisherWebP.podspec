@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'KingfisherWebP'
-  s.version          = '0.2.3'
+  s.version          = '0.3.0'
   s.summary          = 'A Kingfisher extension helping you process webp format'
 
   s.description      = <<-DESC
@@ -20,6 +20,10 @@ KingfisherWebP is an extension of the popular library [Kingfisher](https://githu
   s.watchos.deployment_target = "2.0"
 
   s.source_files = 'KingfisherWebP/Classes/**/*'
+  s.public_header_files = 'KingfisherWebP/Classes/KingfisherWebP-umbrella.h'
+  s.private_header_files = 'KingfisherWebP/Classes/CGImage+WebP.h'
+  s.module_map = 'KingfisherWebP/KingfisherWebP.modulemap'
+
   s.xcconfig = {
     'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/libwebp/src'
   }
@@ -35,11 +39,11 @@ KingfisherWebP is an extension of the popular library [Kingfisher](https://githu
   }
 
   #s.osx.exclude_files = # None
-  s.watchos.exclude_files = ["KingfisherWebP/Classes/Kingfisher+WebP.swift"]
+  #s.watchos.exclude_files = # None
   #s.ios.exclude_files = # None
   #s.tvos.exclude_files = # None
 
-  s.dependency 'Kingfisher', '~> 3.7.1'
+  s.dependency 'Kingfisher', '~> 3.9'
   s.dependency 'libwebp'
   
 end
