@@ -25,3 +25,4 @@ public struct WebPSerializer: CacheSerializer {
         return WebPProcessor.default.process(item: .data(data), options: options ?? [])
     }
 }
+
