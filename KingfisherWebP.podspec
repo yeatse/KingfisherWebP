@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'KingfisherWebP'
-  s.version          = '0.3.0'
+  s.version          = '0.4.0'
   s.summary          = 'A Kingfisher extension helping you process webp format'
 
   s.description      = <<-DESC
@@ -11,10 +11,10 @@ KingfisherWebP is an extension of the popular library [Kingfisher](https://githu
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'Yang Chao' => 'iyeatse@gmail.com' }
-  s.source           = { :git => 'https://github.com/yeatse/KingfisherWebP.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/Albinzr/KingfisherWebP.git', :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/yeatse'
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '10.0'
   s.tvos.deployment_target = "9.0"
 #s.osx.deployment_target = "10.10" # Not supported for now
   s.watchos.deployment_target = "2.0"
@@ -43,7 +43,7 @@ KingfisherWebP is an extension of the popular library [Kingfisher](https://githu
   #s.ios.exclude_files = # None
   #s.tvos.exclude_files = # None
 
-  s.dependency 'Kingfisher', '~> 3.9'
+  s.dependency 'Kingfisher', '~> 4.0'
   s.dependency 'libwebp'
   
 end

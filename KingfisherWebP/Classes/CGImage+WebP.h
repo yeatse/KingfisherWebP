@@ -17,3 +17,4 @@ CGImageRef __nullable CGImageCreateWithWebPData(CFDataRef __nullable webpData, B
 CFDataRef __nullable WebPRepresentationDataCreateWithImage(CGImageRef __nonnull image);
 
 CF_IMPLICIT_BRIDGING_DISABLED
+
