@@ -1,7 +1,7 @@
 PODS:
-  - Kingfisher (3.9.0)
-  - KingfisherWebP (0.3.0):
-    - Kingfisher (~> 3.9)
+  - Kingfisher (4.0.1)
+  - KingfisherWebP (0.3.1):
+    - Kingfisher (~> 4.0)
     - libwebp
   - libwebp (0.6.0):
     - libwebp/core (= 0.6.0)
@@ -33,13 +33,13 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   KingfisherWebP:
-    :path: "../"
+    :path: ../
 
 SPEC CHECKSUMS:
-  Kingfisher: 752686a0fbb300df3240ba86431168ab9244bef2
-  KingfisherWebP: 42d9e8ace6e4edf234364e8548b3c854f757b960
+  Kingfisher: b771785e9461ed4b8686d40e7145f9e58100cb24
+  KingfisherWebP: cb3a96caddb5a122128c20f3c79e3cf35cc7975a
   libwebp: 1d5a07c2eb97f9c31bd5f154bb82efc0ea67c6a2
 
-PODFILE CHECKSUM: eff381ceca6565d780dee048e102977a526d1112
+PODFILE CHECKSUM: 35e7d4ae0ed8f5f611860e601fa64aa8466a2a91
 
-COCOAPODS: 1.2.1
+COCOAPODS: 1.3.1
