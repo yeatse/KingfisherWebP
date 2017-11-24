@@ -57,9 +57,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "KingfisherWebP_Example.app"
-            BlueprintName = "KingfisherWebP_Example"
+            BlueprintIdentifier = "383E63EC1DB92CB20041CE17"
+            BuildableName = "KingfisherWebPExample.app"
+            BlueprintName = "KingfisherWebPExample"
             ReferencedContainer = "container:KingfisherWebP.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -81,9 +81,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "KingfisherWebP_Example.app"
-            BlueprintName = "KingfisherWebP_Example"
+            BlueprintIdentifier = "383E63EC1DB92CB20041CE17"
+            BuildableName = "KingfisherWebPExample.app"
+            BlueprintName = "KingfisherWebPExample"
             ReferencedContainer = "container:KingfisherWebP.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
