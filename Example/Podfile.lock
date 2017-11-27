@@ -2,31 +2,31 @@ PODS:
   - Kingfisher (4.2.0)
   - KingfisherWebP (0.3.1.1):
     - Kingfisher (= 4.2.0)
-    - libwebp (= 0.6.0)
-  - libwebp (0.6.0):
-    - libwebp/core (= 0.6.0)
-    - libwebp/dec (= 0.6.0)
-    - libwebp/demux (= 0.6.0)
-    - libwebp/dsp (= 0.6.0)
-    - libwebp/enc (= 0.6.0)
-    - libwebp/mux (= 0.6.0)
-    - libwebp/utils (= 0.6.0)
-    - libwebp/webp (= 0.6.0)
-  - libwebp/core (0.6.0):
-    - libwebp/webp
-  - libwebp/dec (0.6.0):
-    - libwebp/core
-  - libwebp/demux (0.6.0):
-    - libwebp/core
-  - libwebp/dsp (0.6.0):
-    - libwebp/core
-  - libwebp/enc (0.6.0):
-    - libwebp/core
-  - libwebp/mux (0.6.0):
-    - libwebp/core
-  - libwebp/utils (0.6.0):
-    - libwebp/core
-  - libwebp/webp (0.6.0)
+    - mjblibwebp (= 0.6.0)
+  - mjblibwebp (0.6.0):
+    - mjblibwebp/core (= 0.6.0)
+    - mjblibwebp/dec (= 0.6.0)
+    - mjblibwebp/demux (= 0.6.0)
+    - mjblibwebp/dsp (= 0.6.0)
+    - mjblibwebp/enc (= 0.6.0)
+    - mjblibwebp/mux (= 0.6.0)
+    - mjblibwebp/utils (= 0.6.0)
+    - mjblibwebp/webp (= 0.6.0)
+  - mjblibwebp/core (0.6.0):
+    - mjblibwebp/webp
+  - mjblibwebp/dec (0.6.0):
+    - mjblibwebp/core
+  - mjblibwebp/demux (0.6.0):
+    - mjblibwebp/core
+  - mjblibwebp/dsp (0.6.0):
+    - mjblibwebp/core
+  - mjblibwebp/enc (0.6.0):
+    - mjblibwebp/core
+  - mjblibwebp/mux (0.6.0):
+    - mjblibwebp/core
+  - mjblibwebp/utils (0.6.0):
+    - mjblibwebp/core
+  - mjblibwebp/webp (0.6.0)
 
 DEPENDENCIES:
   - KingfisherWebP (from `../`)
@@ -37,9 +37,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Kingfisher: 9ee7e788d8ba07c3f21ce0d43f33cec310a4f781
-  KingfisherWebP: cae5d45f6f5c14f8d1fc2e4747431a1f8c839986
-  libwebp: 1d5a07c2eb97f9c31bd5f154bb82efc0ea67c6a2
+  KingfisherWebP: 6b0e320605bed9cedc052b2bb41517c6aed4363d
+  mjblibwebp: 0b9040b47e6a267ae3014fb924ffde9ebb580cd7
 
-PODFILE CHECKSUM: df831420a628dfbe474ea48a9f1ebbaf49e6ece5
+PODFILE CHECKSUM: abefc05b2f9a448ee1ae9150242ec8134637dad0
 
-COCOAPODS: 1.3.1
+COCOAPODS: 1.4.0.beta.2

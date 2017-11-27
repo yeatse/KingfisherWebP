@@ -25,17 +25,17 @@ KingfisherWebP is an extension of the popular library [Kingfisher](https://githu
   s.module_map = 'KingfisherWebP/KingfisherWebP.modulemap'
 
   s.xcconfig = {
-    'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/libwebp/src'
+    'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/mjblibwebp/src'
   }
   s.tvos.xcconfig = {
-    'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/libwebp/src'
+    'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/mjblibwebp/src'
   }
   s.osx.xcconfig = {
-    'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/libwebp/src'
+    'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/mjblibwebp/src'
   }
   s.watchos.xcconfig = {
     'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) WEBP_USE_INTRINSICS=1',
-    'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/libwebp/src'
+    'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/mjblibwebp/src'
   }
 
   #s.osx.exclude_files = # None
@@ -44,6 +44,6 @@ KingfisherWebP is an extension of the popular library [Kingfisher](https://githu
   #s.tvos.exclude_files = # None
 
   s.dependency 'Kingfisher', '4.2.0'
-  s.dependency 'libwebp', '0.6.0'
-  
+  s.dependency 'mjblibwebp', '0.6.0'
+
 end
