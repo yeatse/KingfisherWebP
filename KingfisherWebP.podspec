@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'KingfisherWebP'
-  s.version          = '0.3.1.2'
+  s.version          = '0.3.1.3'
   s.summary          = 'A Kingfisher extension helping you process webp format'
 
   s.description      = <<-DESC
@@ -43,7 +43,7 @@ KingfisherWebP is an extension of the popular library [Kingfisher](https://githu
   #s.ios.exclude_files = # None
   #s.tvos.exclude_files = # None
 
-  s.dependency 'Kingfisher', '4.2.0'
+  s.dependency 'Kingfisher', '~> 4.5'
   s.dependency 'mjblibwebp', '0.6.0'
 
 end
