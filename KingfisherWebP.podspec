@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'KingfisherWebP'
-  s.version          = '0.3.1.3'
+  s.version          = '0.3.1.4'
   s.summary          = 'A Kingfisher extension helping you process webp format'
 
   s.description      = <<-DESC
