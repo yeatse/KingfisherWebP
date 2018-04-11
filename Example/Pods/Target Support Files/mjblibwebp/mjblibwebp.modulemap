@@ -1,0 +1,6 @@
+framework module mjblibwebp {
+  umbrella header "mjblibwebp-umbrella.h"
+
+  export *
+  module * { export * }
+}
