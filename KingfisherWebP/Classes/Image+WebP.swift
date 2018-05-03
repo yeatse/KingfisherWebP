@@ -12,25 +12,45 @@ import KingfisherWebP.Private
 // MARK: - Image Representation
 extension Kingfisher where Base: Image {
     func webpRepresentation() -> Data? {
+        if let images = base.images?.compactMap({ $0.cgImage }) {
+            let imageInfo = [ kWebPAnimatedImageFrames: images,
+                              kWebPAnimatedImageDuration: NSNumber(value: base.duration) ] as [CFString : Any]
+            return WebPDataCreateWithAnimatedImageInfo(imageInfo as CFDictionary) as Data?
+        }
+        
         guard let cgImage = base.cgImage else {
             return nil
         }
-        return WebPRepresentationDataCreateWithImage(cgImage) as Data?
+        return WebPDataCreateWithImage(cgImage) as Data?
     }
 }
 
 // MARK: - Create image from WebP data
 extension Kingfisher where Base: Image {
-    static func image(webpData: Data, scale: CGFloat) -> Image? {
-        let useThreads = true; //speed up 23%
-        let bypassFiltering = false; //speed up 11%, cause some banding
-        let noFancyUpsampling = false; //speed down 16%, lose some details
-
-        guard let cgImage = CGImageCreateWithWebPData(  webpData as CFData, useThreads, bypassFiltering, noFancyUpsampling) else {
-            return nil;
+    static func image(webpData: Data, scale: CGFloat, onlyFirstFrame: Bool) -> Image? {
+        let frameCount = WebPImageFrameCountGetFromData(webpData as CFData)
+        if (frameCount == 0) {
+            return nil
         }
-
-        return Image(cgImage: cgImage, scale: scale, orientation: .up)
+        
+        if (frameCount == 1 || onlyFirstFrame) {
+            guard let cgImage = WebPImageCreateWithData(webpData as CFData) else {
+                return nil
+            }
+            return Image(cgImage: cgImage, scale: scale, orientation: .up)
+        }
+        
+        // MARK: Animated images
+        guard let animationInfo = WebPAnimatedImageInfoCreateWithData(webpData as CFData) as Dictionary? else {
+            return nil
+        }
+        guard let cgFrames = animationInfo[kWebPAnimatedImageFrames] as? [CGImage] else {
+            return nil
+        }
+        let uiFrames = cgFrames.map { Image(cgImage: $0, scale: scale, orientation: .up) }
+        
+        let duration = (animationInfo[kWebPAnimatedImageDuration] as? NSNumber).flatMap { $0.doubleValue as TimeInterval } ?? 0.1 * TimeInterval(frameCount)
+        return Image.animatedImage(with: uiFrames, duration: duration)
     }
 }
 
@@ -52,29 +72,5 @@ extension Data {
         } else {
             return false
         }
-    }
-}
-
-// MARK: - Helper
-extension KingfisherOptionsInfoItem {
-    var isScaleFactor: Bool {
-        if case .scaleFactor = self {
-            return true
-        } else {
-            return false
-        }
-    }
-}
-
-extension Collection where Iterator.Element == KingfisherOptionsInfoItem {
-    var firstScaleFactorItem: KingfisherOptionsInfoItem? {
-        return index { $0.isScaleFactor }.flatMap { self[$0] }
-    }
-
-    var scaleFactor: CGFloat {
-        if let item = firstScaleFactorItem, case .scaleFactor(let scale) = item {
-            return scale
-        }
-        return 1.0
     }
 }
