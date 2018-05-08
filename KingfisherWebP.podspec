@@ -44,6 +44,6 @@ KingfisherWebP is an extension of the popular library [Kingfisher](https://githu
   #s.tvos.exclude_files = # None
 
   s.dependency 'Kingfisher', '~> 4.0'
-  s.dependency 'libwebp'
+  s.dependency 'libwebp', '>= 0.5.0'
   
 end
