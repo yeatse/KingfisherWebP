@@ -4,12 +4,8 @@ import Kingfisher
 @testable import KingfisherWebP
 
 class KingfisherWebPTests: XCTestCase {
-
-    let animationFileNames = ["animation"]
-    let animationOriginalFileNames = ["animation.gif"]
-
-    let fileNames = ["cover", "kingfisher", "logo", "animation"]
-    let originalFileNames = ["cover.png", "kingfisher.jpg", "logo.png", "animation.gif"]
+    let fileNames = ["cover.png", "kingfisher.jpg", "logo.png", "animation.gif"]
+    let animationFileNames = ["animation.gif"]
 
     override func setUp() {
         super.setUp()
@@ -20,117 +16,103 @@ class KingfisherWebPTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
-
-    func testWebPDecoding() {
+    
+    func testSingleFrameDecoding() {
         let p = WebPProcessor.default
         XCTAssertEqual(p.identifier, "com.yeatse.WebPProcessor")
-
-        fileNames.enumerated().forEach { (index, fileName) in
-            let data = Data(fileName: fileName, extension: "webp")
-            let decodedImage = p.process(item: .data(data), options: [])
-            XCTAssertNotNil(decodedImage, fileName)
-
-            let originalData = Data(fileName: originalFileNames[index])
+        
+        fileNames.forEach { fileName in
+            let webpData = Data(fileName: (fileName as NSString).deletingPathExtension, extension: "webp")
+            let decodedWebP = p.process(item: .data(webpData), options: [.onlyLoadFirstFrame])
+            XCTAssertNotNil(decodedWebP, fileName)
+            
+            let originalData = Data(fileName: fileName)
             let originalImage = Image(data: originalData)!
-
-            XCTAssertTrue(decodedImage!.renderEqual(to: originalImage), fileName)
+            XCTAssertTrue(decodedWebP!.renderEqual(to: originalImage), fileName)
         }
     }
 
-    func testWebPAnimationDecoding() {
+    func testMultipleFramesDecoding() {
         let p = WebPProcessor.default
-        XCTAssertEqual(p.identifier, "com.yeatse.WebPProcessor")
-
-        // TODO: Iterate on all frames of decoded animations for comparison
-        animationFileNames.enumerated().forEach { (index, fileName) in
-            let data = Data(fileName: fileName, extension: "webp")
-            let decodedImage = p.process(item: .data(data), options: [])
-            XCTAssertNotNil(decodedImage, fileName)
-
-            let originalData = Data(fileName: animationOriginalFileNames[index])
-            let originalImage = Image(data: originalData)!
-
-            XCTAssertTrue(decodedImage!.renderEqual(to: originalImage), fileName)
+        
+        animationFileNames.forEach { fileName in
+            let webpData = Data(fileName: (fileName as NSString).deletingPathExtension, extension: "webp")
+            let decodedWebP = p.process(item: .data(webpData), options: [])
+            XCTAssertNotNil(decodedWebP, fileName)
+            
+            let originalData = Data(fileName: fileName)
+            let originalImage = DefaultImageProcessor.default.process(item: .data(originalData), options: [.preloadAllAnimationData])
+            
+            XCTAssertTrue(decodedWebP?.images?.count == originalImage?.images?.count, fileName)
+            
+            decodedWebP?.images?.enumerated().forEach { (index, frame) in
+                let originalFrame = originalImage!.images![index]
+                XCTAssertTrue(frame.renderEqual(to: originalFrame), "Frame \(index) of \(fileName) should be equal")
+            }
         }
     }
-
-    func testDefaultDecoding() {
-        let p = WebPProcessor.default
-        XCTAssertEqual(p.identifier, "com.yeatse.WebPProcessor")
-
-        originalFileNames.forEach { (fileName) in
-            let data = Data(fileName: fileName)
-            let image1 = p.process(item: .data(data), options: [])!
-            let image2 = Image(data: data)!
-
-            XCTAssertTrue(image1.renderEqual(to: image2), fileName)
-        }
-    }
-
-    func testWebPSerializing() {
+    
+    func testSingleFrameEncoding() {
         let s = WebPSerializer.default
 
-        originalFileNames.forEach { (fileName) in
+        fileNames.forEach { fileName in
             let image = Image(data: Data(fileName: fileName))!
-
-            let serializedData = s.data(with: image, original: nil)
-            XCTAssertNotNil(serializedData, fileName)
-
-            let encodedImage = s.image(with: serializedData!, options: [])
-            XCTAssertNotNil(encodedImage, fileName)
-
-            XCTAssertTrue(image.renderEqual(to: encodedImage!), fileName)
+            
+            let webpData = s.data(with: image, original: nil)
+            XCTAssertNotNil(webpData, fileName)
+            
+            let imageFromWebPData = s.image(with: webpData!, options: [.onlyLoadFirstFrame])
+            XCTAssertNotNil(imageFromWebPData, fileName)
+            
+            XCTAssertTrue(image.renderEqual(to: imageFromWebPData!), fileName)
         }
     }
 
-    func testWebPAnimationSerializing() {
+    func testMultipleFrameEncoding() {
         let s = WebPSerializer.default
+        
+        animationFileNames.forEach { fileName in
+            let originalData = Data(fileName: fileName)
+            let originalImage = DefaultImageProcessor.default.process(item: .data(originalData), options: [])!
+            
+            let webpData = s.data(with: originalImage, original: nil)
+            XCTAssertNotNil(webpData, fileName)
+            
+            let imageFromWebPData = s.image(with: webpData!, options: [])
+            XCTAssertNotNil(imageFromWebPData, fileName)
 
-        // TODO: Iterate on all frames
-        animationOriginalFileNames.forEach { (fileName) in
-            let image = Image(data: Data(fileName: fileName))!
-
-            let serializedData = s.data(with: image, original: nil)
-            XCTAssertNotNil(serializedData, fileName)
-
-            let encodedImage = s.image(with: serializedData!, options: [])
-            XCTAssertNotNil(encodedImage, fileName)
-
-            XCTAssertTrue(image.renderEqual(to: encodedImage!), fileName)
+            XCTAssertTrue(imageFromWebPData?.images?.count == originalImage.images?.count, fileName)
+            
+            imageFromWebPData?.images?.enumerated().forEach { (index, frame) in
+                let originalFrame = originalImage.images![index]
+                XCTAssertTrue(frame.renderEqual(to: originalFrame), "Frame \(index) of \(fileName) should be equal")
+            }
         }
     }
-
-    func testDefaultSerializing() {
-        let s = WebPSerializer.default
-
-        originalFileNames.forEach { (fileName) in
-            let data = Data(fileName: fileName)
-            let image = Image(data: data)!
-
-            let defaultSerializedData = DefaultCacheSerializer.default.data(with: image, original: data)
-            let serializedData = s.data(with: image, original: data)
-
-            XCTAssertEqual(defaultSerializedData, serializedData, fileName)
-        }
-    }
-
+    
     func testEncodingPerformance() {
         let s = WebPSerializer.default
-        let images = originalFileNames.map({ Image(data: Data(fileName: $0))! })
+        let images = fileNames.compactMap { fileName -> Image? in
+            let data = Data(fileName: fileName)
+            return DefaultImageProcessor.default.process(item: .data(data), options: [])
+        }
+        
         measure {
-            images.forEach({ (image) in
-                let _ = s.data(with: image, original: nil)
-            })
+            images.forEach {
+                let _ = s.data(with: $0, original: nil)
+            }
         }
     }
 
     func testDecodingperformance() {
         let p = WebPProcessor.default
-        let dataList = fileNames.map({ Data(fileName: $0, extension: "webp") })
+        let dataList = fileNames.compactMap { (fileName) -> Data? in
+            return Data(fileName: (fileName as NSString).deletingPathExtension, extension: "webp")
+        }
         measure {
-            dataList.forEach({ (data) in
-                let _ = p.process(item: .data(data), options: [])
-            })
+            dataList.forEach {
+                let _ = p.process(item: .data($0), options: [])
+            }
         }
     }
 }

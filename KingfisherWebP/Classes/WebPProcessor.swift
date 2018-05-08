@@ -22,7 +22,7 @@ public struct WebPProcessor: ImageProcessor {
             return image
         case .data(let data):
             if data.isWebPFormat {
-                return Kingfisher<Image>.image(webpData: data, scale: options.scaleFactor)
+                return Kingfisher<Image>.image(webpData: data, scale: options.scaleFactor, onlyFirstFrame: options.onlyLoadFirstFrame)
             } else {
                 return DefaultImageProcessor.default.process(item: item, options: options)
             }
