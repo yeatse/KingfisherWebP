@@ -12,16 +12,28 @@ import KingfisherWebP.Private
 // MARK: - Image Representation
 extension Kingfisher where Base: Image {
     func webpRepresentation() -> Data? {
-        if let images = base.images?.compactMap({ $0.cgImage }) {
-            let imageInfo = [ kWebPAnimatedImageFrames: images,
-                              kWebPAnimatedImageDuration: NSNumber(value: base.duration) ] as [CFString : Any]
-            return WebPDataCreateWithAnimatedImageInfo(imageInfo as CFDictionary) as Data?
+        if let result = animatedWebPRepresentation() {
+            return result
         }
-        
-        guard let cgImage = base.cgImage else {
+        if let cgImage = base.cgImage {
+            return WebPDataCreateWithImage(cgImage) as Data?
+        }
+        return nil
+    }
+    
+    private func animatedWebPRepresentation() -> Data? {
+        #if swift(>=4.1)
+        guard let images = base.images?.compactMap({ $0.cgImage }) else {
             return nil
         }
-        return WebPDataCreateWithImage(cgImage) as Data?
+        #else
+        guard let images = base.images?.flatMap({ $0.cgImage }) else {
+            return nil
+        }
+        #endif
+        let imageInfo = [ kWebPAnimatedImageFrames: images,
+                          kWebPAnimatedImageDuration: NSNumber(value: base.duration) ] as [CFString : Any]
+        return WebPDataCreateWithAnimatedImageInfo(imageInfo as CFDictionary) as Data?
     }
 }
 
