@@ -1,6 +1,6 @@
 PODS:
   - Kingfisher (4.7.0)
-  - KingfisherWebP (0.4.0):
+  - KingfisherWebP (0.4.1):
     - Kingfisher (~> 4.0)
     - libwebp (>= 0.5.0)
   - libwebp (0.6.1):
@@ -42,7 +42,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Kingfisher: da6b005aa96d37698e3e4f1ccfe96a5b9bbf27d6
-  KingfisherWebP: 7eddf32b16e2b9b6002badca61447ea66c0c8ed9
+  KingfisherWebP: 5b26a0b24ab9d0de2335a1ca68843c37f38dc3eb
   libwebp: 0f01098c6c17175391af621b2f14150f3ca16e16
 
 PODFILE CHECKSUM: 9e4019de665018d4ace4453f0e92d494a01e494a
