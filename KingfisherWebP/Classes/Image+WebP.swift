@@ -11,7 +11,7 @@ import KingfisherWebP.Private
 
 // MARK: - Image Representation
 extension Kingfisher where Base: Image {
-    func webpRepresentation() -> Data? {
+    public func webpRepresentation() -> Data? {
         if let result = animatedWebPRepresentation() {
             return result
         }
@@ -68,7 +68,7 @@ extension Kingfisher where Base: Image {
 
 // MARK: - WebP Format Testing
 extension Data {
-    var isWebPFormat: Bool {
+    public var isWebPFormat: Bool {
         if count < 12 {
             return false
         }
