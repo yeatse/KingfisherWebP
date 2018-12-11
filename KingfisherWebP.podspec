@@ -14,10 +14,10 @@ KingfisherWebP is an extension of the popular library [Kingfisher](https://githu
   s.source           = { :git => 'https://github.com/yeatse/KingfisherWebP.git', :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/yeatse'
 
-  s.ios.deployment_target = '8.0'
-  s.tvos.deployment_target = "9.0"
-#s.osx.deployment_target = "10.10" # Not supported for now
-  s.watchos.deployment_target = "2.0"
+  s.ios.deployment_target = '10.0'
+  s.tvos.deployment_target = '10.0'
+#  s.osx.deployment_target = '10.12'
+  s.watchos.deployment_target = '3.0'
 
   s.source_files = 'KingfisherWebP/Classes/**/*'
   s.public_header_files = 'KingfisherWebP/Classes/KingfisherWebP-umbrella.h'
@@ -43,7 +43,7 @@ KingfisherWebP is an extension of the popular library [Kingfisher](https://githu
   #s.ios.exclude_files = # None
   #s.tvos.exclude_files = # None
 
-  s.dependency 'Kingfisher', '~> 4.0'
+  s.dependency 'Kingfisher', '~> 5.0'
   s.dependency 'libwebp', '>= 0.5.0'
   
 end
