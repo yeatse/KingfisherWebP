@@ -130,7 +130,7 @@ extension Image {
     func renderEqual(to image: Image, withinTolerance tolerance: UInt8 = 3, tolerancePercent: Double = 0) -> Bool {
 
         guard size == image.size else { return false }
-        guard let imageData1 = UIImagePNGRepresentation(self), let imageData2 = UIImagePNGRepresentation(image) else { return false }
+        guard let imageData1 = pngData(), let imageData2 = image.pngData() else { return false }
         guard let unifiedImage1 = Image(data: imageData1), let unifiedImage2 = Image(data: imageData2) else { return false }
 
         guard let rendered1 = unifiedImage1.rendered(), let rendered2 = unifiedImage2.rendered() else { return false }
