@@ -24,16 +24,16 @@ KingfisherWebP is an extension of the popular library [Kingfisher](https://githu
   s.private_header_files = 'KingfisherWebP/Classes/CGImage+WebP.h'
   s.module_map = 'KingfisherWebP/KingfisherWebP.modulemap'
 
-  s.xcconfig = {
+  s.pod_target_xcconfig = {
     'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/libwebp/src'
   }
-  s.tvos.xcconfig = {
+  s.tvos.pod_target_xcconfig = {
     'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/libwebp/src'
   }
-  s.osx.xcconfig = {
+  s.osx.pod_target_xcconfig = {
     'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/libwebp/src'
   }
-  s.watchos.xcconfig = {
+  s.watchos.pod_target_xcconfig = {
     'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) WEBP_USE_INTRINSICS=1',
     'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/libwebp/src'
   }
