@@ -7,7 +7,6 @@
 //
 
 import Kingfisher
-import KingfisherWebP.Private
 import CoreGraphics
 
 // MARK: - Image Representation
