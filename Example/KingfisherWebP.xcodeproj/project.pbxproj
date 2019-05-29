@@ -249,7 +249,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-KingfisherWebP_Tests/Pods-KingfisherWebP_Tests-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-KingfisherWebP_Tests/Pods-KingfisherWebP_Tests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework",
 				"${BUILT_PRODUCTS_DIR}/KingfisherWebP/KingfisherWebP.framework",
 				"${BUILT_PRODUCTS_DIR}/libwebp/libwebp.framework",
@@ -262,7 +262,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-KingfisherWebP_Tests/Pods-KingfisherWebP_Tests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-KingfisherWebP_Tests/Pods-KingfisherWebP_Tests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		E2D6F902231FDD839C3FC5BB /* [CP] Check Pods Manifest.lock */ = {
