@@ -17,13 +17,13 @@ public struct WebPProcessor: ImageProcessor {
 
     public init() {}
 
-    public func process(item: ImageProcessItem, options: KingfisherParsedOptionsInfo) -> Image? {
+    public func process(item: ImageProcessItem, options: KingfisherParsedOptionsInfo) -> KFCrossPlatformImage? {
         switch item {
         case .image(let image):
             return image
         case .data(let data):
             if data.isWebPFormat {
-                return KingfisherWrapper<Image>.image(webpData: data, scale: options.scaleFactor, onlyFirstFrame: options.onlyLoadFirstFrame)
+                return KingfisherWrapper<KFCrossPlatformImage>.image(webpData: data, scale: options.scaleFactor, onlyFirstFrame: options.onlyLoadFirstFrame)
             } else {
                 return DefaultImageProcessor.default.process(item: item, options: options)
             }
