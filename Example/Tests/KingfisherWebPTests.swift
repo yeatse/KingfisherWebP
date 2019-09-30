@@ -27,7 +27,7 @@ class KingfisherWebPTests: XCTestCase {
             XCTAssertNotNil(decodedWebP, fileName)
             
             let originalData = Data(fileName: fileName)
-            let originalImage = Image(data: originalData)!
+            let originalImage = KFCrossPlatformImage(data: originalData)!
             XCTAssertTrue(decodedWebP!.renderEqual(to: originalImage), fileName)
         }
     }
@@ -56,7 +56,7 @@ class KingfisherWebPTests: XCTestCase {
         let s = WebPSerializer.default
 
         fileNames.forEach { fileName in
-            let image = Image(data: Data(fileName: fileName))!
+            let image = KFCrossPlatformImage(data: Data(fileName: fileName))!
             
             let webpData = s.data(with: image, original: nil)
             XCTAssertNotNil(webpData, fileName)
@@ -92,7 +92,7 @@ class KingfisherWebPTests: XCTestCase {
     
     func testEncodingPerformance() {
         let s = WebPSerializer.default
-        let images = fileNames.compactMap { fileName -> Image? in
+        let images = fileNames.compactMap { fileName -> KFCrossPlatformImage? in
             let data = Data(fileName: fileName)
             return DefaultImageProcessor.default.process(item: .data(data), options: [])
         }
@@ -126,12 +126,12 @@ extension Data {
 }
 
 // Copied from Kingfisher project
-extension Image {
-    func renderEqual(to image: Image, withinTolerance tolerance: UInt8 = 3, tolerancePercent: Double = 0) -> Bool {
+extension KFCrossPlatformImage {
+    func renderEqual(to image: KFCrossPlatformImage, withinTolerance tolerance: UInt8 = 3, tolerancePercent: Double = 0) -> Bool {
 
         guard size == image.size else { return false }
         guard let imageData1 = pngData(), let imageData2 = image.pngData() else { return false }
-        guard let unifiedImage1 = Image(data: imageData1), let unifiedImage2 = Image(data: imageData2) else { return false }
+        guard let unifiedImage1 = KFCrossPlatformImage(data: imageData1), let unifiedImage2 = KFCrossPlatformImage(data: imageData2) else { return false }
 
         guard let rendered1 = unifiedImage1.rendered(), let rendered2 = unifiedImage2.rendered() else { return false }
         guard let data1 = rendered1.cgImage?.dataProvider?.data, let data2 = rendered2.cgImage?.dataProvider?.data else { return false }
@@ -159,7 +159,7 @@ extension Image {
         return dismatchedLength <= Int(tolerancePercent * Double(length1))
     }
 
-    func rendered() -> Image? {
+    func rendered() -> KFCrossPlatformImage? {
         // Ignore non CG images
         guard let cgImage = cgImage else {
             return nil
@@ -197,9 +197,9 @@ extension Image {
         context.draw(cgImage, in: CGRect(origin: CGPoint.zero, size: size))
 
         #if os(macOS)
-            return context.makeImage().flatMap { Image(cgImage: $0, size: kf.size) }
+            return context.makeImage().flatMap { KFCrossPlatformImage(cgImage: $0, size: kf.size) }
         #else
-            return context.makeImage().flatMap { Image(cgImage: $0) }
+            return context.makeImage().flatMap { KFCrossPlatformImage(cgImage: $0) }
         #endif
     }
 }
