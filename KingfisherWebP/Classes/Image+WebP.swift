@@ -69,20 +69,16 @@ extension KingfisherWrapper where Base: KFCrossPlatformImage {
 // MARK: - WebP Format Testing
 extension Data {
     public var isWebPFormat: Bool {
-        if count < 12 {
-            return false
-        }
-
-        let endIndex = index(startIndex, offsetBy: 12)
-        let testData = subdata(in: startIndex..<endIndex)
-        guard let testString = String(data: testData, encoding: .ascii) else {
-            return false
-        }
-
-        if testString.hasPrefix("RIFF") && testString.hasSuffix("WEBP") {
+        var buffer = [UInt8](repeating: 0, count: 1)
+        self.copyBytes(to: &buffer, count: 1)
+        
+        switch buffer {
+        case [0x52] where self.count >= 12:
+        if let str = String(data: self[0...11], encoding: .ascii), (str.hasPrefix("RIFF") || str.hasPrefix("WEBP")) {
             return true
-        } else {
-            return false
         }
+        default: break;
+        }
+        return false
     }
 }
