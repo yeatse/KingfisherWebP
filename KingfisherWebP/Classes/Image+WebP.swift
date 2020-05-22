@@ -74,7 +74,7 @@ extension Data {
         
         switch buffer {
         case [0x52] where self.count >= 12:
-        if let str = String(data: self[0...11], encoding: .ascii), (str.hasPrefix("RIFF") || str.hasPrefix("WEBP")) {
+        if let str = String(data: self[0...11], encoding: .ascii), str.hasPrefix("RIFF"), str.hasSuffix("WEBP") {
             return true
         }
         default: break;
