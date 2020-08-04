@@ -58,12 +58,20 @@ iOS 8 or above
 
 ## Installation
 
-KingfisherWebP is available through [CocoaPods](http://cocoapods.org). To install
-it, simply add the following line to your Podfile:
+### CocoaPods
+
+KingfisherWebP is available through [CocoaPods](http://cocoapods.org). To install it, simply add the following line to your Podfile:
 
 ```ruby
 pod "KingfisherWebP"
 ```
+
+### Swift Package Manager
+
+From Xcode 11, you can use [Swift Package Manager](https://swift.org/package-manager/) to add KingfisherWebP to your project. The "package repository url" of KingfisherWebP is `https://github.com/yeatse/KingfisherWebP.git`.
+
+![SPM screenshot](spm_screenshot.png)
+
 
 ## Author
 
