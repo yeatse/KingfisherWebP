@@ -72,6 +72,16 @@ From Xcode 11, you can use [Swift Package Manager](https://swift.org/package-man
 
 ![SPM screenshot](spm_screenshot.png)
 
+### Carthage
+
+You can also add KingfisherWebP using [Carthage](https://github.com/Carthage/Carthage). Note that KingfisherWebP is built on top of [libwebp](https://chromium.googlesource.com/webm/libwebp) project, so in your `Cartfile` you should add `libwebp` dependency as well:
+
+```
+github "yeatse/KingfisherWebP" ~> 1.0.0
+github "onevcat/Kingfisher" ~> 5.8.0
+github "SDWebImage/libwebp-Xcode" ~> 1.0.0
+```
+
 
 ## Author
 
