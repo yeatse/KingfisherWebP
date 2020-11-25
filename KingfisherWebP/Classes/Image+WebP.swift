@@ -16,17 +16,21 @@ import KingfisherWebP_ObjC
 
 // MARK: - Image Representation
 extension KingfisherWrapper where Base: KFCrossPlatformImage {
-    public func webpRepresentation() -> Data? {
+    /// isLossy  (0=lossy , 1=lossless (default)).
+    /// Note that the default values are isLossy= false and quality=75.0f
+    public func webpRepresentation(isLossy: Bool = false, quality: Float = 75.0) -> Data? {
         if let result = animatedWebPRepresentation() {
             return result
         }
         if let cgImage = base.cgImage {
-            return WebPDataCreateWithImage(cgImage) as Data?
+            return WebPDataCreateWithImage(cgImage, isLossy, quality) as Data?
         }
         return nil
     }
 
-    private func animatedWebPRepresentation() -> Data? {
+    /// isLossy  (0=lossy , 1=lossless (default)).
+    /// Note that the default values are isLossy= false and quality=75.0f
+    private func animatedWebPRepresentation(isLossy: Bool = false, quality: Float = 75.0) -> Data? {
         #if swift(>=4.1)
         guard let images = base.images?.compactMap({ $0.cgImage }) else {
             return nil
@@ -38,7 +42,7 @@ extension KingfisherWrapper where Base: KFCrossPlatformImage {
         #endif
         let imageInfo = [ kWebPAnimatedImageFrames: images,
                           kWebPAnimatedImageDuration: NSNumber(value: base.duration) ] as [CFString : Any]
-        return WebPDataCreateWithAnimatedImageInfo(imageInfo as CFDictionary) as Data?
+        return WebPDataCreateWithAnimatedImageInfo(imageInfo as CFDictionary, isLossy, quality) as Data?
     }
 }
 

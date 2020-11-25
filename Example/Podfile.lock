@@ -1,25 +1,25 @@
 PODS:
-  - Kingfisher (5.8.1):
-    - Kingfisher/Core (= 5.8.1)
-  - Kingfisher/Core (5.8.1)
-  - KingfisherWebP (0.6.0):
-    - Kingfisher (~> 5.0)
+  - Kingfisher (5.15.7):
+    - Kingfisher/Core (= 5.15.7)
+  - Kingfisher/Core (5.15.7)
+  - KingfisherWebP (1.0.0):
+    - Kingfisher (~> 5.8)
     - libwebp (>= 0.5.0)
-  - libwebp (1.0.3):
-    - libwebp/demux (= 1.0.3)
-    - libwebp/mux (= 1.0.3)
-    - libwebp/webp (= 1.0.3)
-  - libwebp/demux (1.0.3):
+  - libwebp (1.1.0):
+    - libwebp/demux (= 1.1.0)
+    - libwebp/mux (= 1.1.0)
+    - libwebp/webp (= 1.1.0)
+  - libwebp/demux (1.1.0):
     - libwebp/webp
-  - libwebp/mux (1.0.3):
+  - libwebp/mux (1.1.0):
     - libwebp/demux
-  - libwebp/webp (1.0.3)
+  - libwebp/webp (1.1.0)
 
 DEPENDENCIES:
   - KingfisherWebP (from `../`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  trunk:
     - Kingfisher
     - libwebp
 
@@ -28,10 +28,10 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Kingfisher: de969e451c81ca6c07a454bc36fea84b8b08c3c7
-  KingfisherWebP: 53327b38511996ce093b50513abe46408a26de43
-  libwebp: 057912d6d0abfb6357d8bb05c0ea470301f5d61e
+  Kingfisher: 6e1a13523fcb1c86924ce53affe4ac957e544d59
+  KingfisherWebP: b1ed1dbc5e52547c5bf5f583dd5c46346f97320f
+  libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
 
 PODFILE CHECKSUM: 912da7ea47a860c96d3fc41cfad2d5c868f105ec
 
-COCOAPODS: 1.7.0
+COCOAPODS: 1.10.0

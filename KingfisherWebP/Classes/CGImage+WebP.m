@@ -268,10 +268,14 @@ CGImageRef WebPImageCreateWithData(CFDataRef webpData) {
     return image;
 }
 
-CFDataRef WebPDataCreateWithImage(CGImageRef image) {
+CFDataRef WebPDataCreateWithImage(CGImageRef image, BOOL isLossy, float quality) {
     WebPConfig config;
-    WebPConfigInit(&config);
-    WebPConfigLosslessPreset(&config, 0);
+    if (isLossy) {
+        WebPConfigInitInternal(&config, WEBP_PRESET_DEFAULT, quality, WEBP_ENCODER_ABI_VERSION);;
+    }else {
+        WebPConfigInit(&config);
+        WebPConfigLosslessPreset(&config, 0);
+    }
     
     WebPPicture picture;
     WebPPictureInit(&picture);
@@ -394,7 +398,7 @@ CFDictionaryRef WebPAnimatedImageInfoCreateWithData(CFDataRef webpData) {
 
 
 
-CFDataRef WebPDataCreateWithAnimatedImageInfo(CFDictionaryRef imageInfo) {
+CFDataRef WebPDataCreateWithAnimatedImageInfo(CFDictionaryRef imageInfo, BOOL isLossy, float quality) {
     CFNumberRef loopCount = CFDictionaryGetValue(imageInfo, kWebPAnimatedImageLoopCount);
     CFNumberRef durationRef = CFDictionaryGetValue(imageInfo, kWebPAnimatedImageDuration);
     CFArrayRef imageFrames = CFDictionaryGetValue(imageInfo, kWebPAnimatedImageFrames);
@@ -427,9 +431,13 @@ CFDataRef WebPDataCreateWithAnimatedImageInfo(CFDictionaryRef imageInfo) {
         WebPPictureInit(&frame);
         if (WebPPictureImportCGImage(&frame, (CGImageRef)CFArrayGetValueAtIndex(imageFrames, i))) {
             WebPConfig config;
-            WebPConfigInit(&config);
-            WebPConfigLosslessPreset(&config, 0);
-            WebPAnimEncoderAdd(enc, &frame, (int)(frameDurationInMilliSec * i), &config);
+            if (isLossy) {
+                WebPConfigInitInternal(&config, WEBP_PRESET_DEFAULT, quality, WEBP_ENCODER_ABI_VERSION);;
+            }else {
+                WebPConfigInit(&config);
+                WebPConfigLosslessPreset(&config, 0);
+            }
+             WebPAnimEncoderAdd(enc, &frame, (int)(frameDurationInMilliSec * i), &config);
         }
         WebPPictureFree(&frame);
     }
