@@ -271,8 +271,8 @@ CGImageRef WebPImageCreateWithData(CFDataRef webpData) {
 CFDataRef WebPDataCreateWithImage(CGImageRef image, BOOL isLossy, float quality) {
     WebPConfig config;
     if (isLossy) {
-        WebPConfigInitInternal(&config, WEBP_PRESET_DEFAULT, quality, WEBP_ENCODER_ABI_VERSION);;
-    }else {
+        WebPConfigPreset(&config, WEBP_PRESET_DEFAULT, quality)
+     }else {
         WebPConfigInit(&config);
         WebPConfigLosslessPreset(&config, 0);
     }
