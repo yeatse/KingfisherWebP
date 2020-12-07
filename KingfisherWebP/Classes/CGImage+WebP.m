@@ -271,7 +271,7 @@ CGImageRef WebPImageCreateWithData(CFDataRef webpData) {
 CFDataRef WebPDataCreateWithImage(CGImageRef image, BOOL isLossy, float quality) {
     WebPConfig config;
     if (isLossy) {
-        WebPConfigPreset(&config, WEBP_PRESET_DEFAULT, quality)
+        WebPConfigPreset(&config, WEBP_PRESET_DEFAULT, quality);
      }else {
         WebPConfigInit(&config);
         WebPConfigLosslessPreset(&config, 0);
@@ -432,7 +432,7 @@ CFDataRef WebPDataCreateWithAnimatedImageInfo(CFDictionaryRef imageInfo, BOOL is
         if (WebPPictureImportCGImage(&frame, (CGImageRef)CFArrayGetValueAtIndex(imageFrames, i))) {
             WebPConfig config;
             if (isLossy) {
-                WebPConfigInitInternal(&config, WEBP_PRESET_DEFAULT, quality, WEBP_ENCODER_ABI_VERSION);;
+                WebPConfigPreset(&config, WEBP_PRESET_DEFAULT, quality);
             }else {
                 WebPConfigInit(&config);
                 WebPConfigLosslessPreset(&config, 0);
