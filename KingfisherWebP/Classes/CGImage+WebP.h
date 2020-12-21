@@ -13,7 +13,7 @@ CF_ASSUME_NONNULL_BEGIN
 
 // still image
 CGImageRef __nullable WebPImageCreateWithData(CFDataRef webpData);
-CFDataRef __nullable WebPDataCreateWithImage(CGImageRef image);
+CFDataRef __nullable WebPDataCreateWithImage(CGImageRef image, BOOL isLossy, float quality);
 
 // animated image
 CG_EXTERN const CFStringRef kWebPAnimatedImageDuration;
@@ -22,7 +22,7 @@ CG_EXTERN const CFStringRef kWebPAnimatedImageFrames; // CFArrayRef of CGImageRe
 
 uint32_t WebPImageFrameCountGetFromData(CFDataRef webpData);
 CFDictionaryRef __nullable WebPAnimatedImageInfoCreateWithData(CFDataRef webpData);
-CFDataRef __nullable WebPDataCreateWithAnimatedImageInfo(CFDictionaryRef imageInfo);
+CFDataRef __nullable WebPDataCreateWithAnimatedImageInfo(CFDictionaryRef imageInfo, BOOL isLossy, float quality);
 
 CF_ASSUME_NONNULL_END
 CF_IMPLICIT_BRIDGING_DISABLED
