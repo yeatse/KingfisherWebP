@@ -31,15 +31,9 @@ extension KingfisherWrapper where Base: KFCrossPlatformImage {
     /// isLossy  (0=lossy , 1=lossless (default)).
     /// Note that the default values are isLossy= false and quality=75.0f
     private func animatedWebPRepresentation(isLossy: Bool = false, quality: Float = 75.0) -> Data? {
-        #if swift(>=4.1)
         guard let images = base.images?.compactMap({ $0.cgImage }) else {
             return nil
         }
-        #else
-        guard let images = base.images?.flatMap({ $0.cgImage }) else {
-            return nil
-        }
-        #endif
         let imageInfo = [ kWebPAnimatedImageFrames: images,
                           kWebPAnimatedImageDuration: NSNumber(value: base.duration) ] as [CFString : Any]
         return WebPDataCreateWithAnimatedImageInfo(imageInfo as CFDictionary, isLossy, quality) as Data?

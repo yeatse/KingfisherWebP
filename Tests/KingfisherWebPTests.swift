@@ -1,3 +1,10 @@
+//
+//  KingfisherWebPTests.swift
+//  KingfisherWebPTests
+//
+//  Created by yeatse on 2020/12/22.
+//
+
 import UIKit
 import XCTest
 import Kingfisher
@@ -203,3 +210,4 @@ extension KFCrossPlatformImage {
         #endif
     }
 }
+
