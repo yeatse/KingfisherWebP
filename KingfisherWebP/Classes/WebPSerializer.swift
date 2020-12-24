@@ -8,6 +8,7 @@
 
 import Kingfisher
 import Foundation
+import UIKit
 
 public struct WebPSerializer: CacheSerializer {
     public static let `default` = WebPSerializer()
