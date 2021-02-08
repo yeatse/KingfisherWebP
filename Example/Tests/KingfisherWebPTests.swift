@@ -23,7 +23,7 @@ class KingfisherWebPTests: XCTestCase {
         
         fileNames.forEach { fileName in
             let webpData = Data(fileName: (fileName as NSString).deletingPathExtension, extension: "webp")
-            let decodedWebP = p.process(item: .data(webpData), options: [.onlyLoadFirstFrame])
+            let decodedWebP = p.process(item: .data(webpData), options: .init([.onlyLoadFirstFrame]))
             XCTAssertNotNil(decodedWebP, fileName)
             
             let originalData = Data(fileName: fileName)
@@ -37,11 +37,11 @@ class KingfisherWebPTests: XCTestCase {
         
         animationFileNames.forEach { fileName in
             let webpData = Data(fileName: (fileName as NSString).deletingPathExtension, extension: "webp")
-            let decodedWebP = p.process(item: .data(webpData), options: [])
+            let decodedWebP = p.process(item: .data(webpData), options: .init([]))
             XCTAssertNotNil(decodedWebP, fileName)
             
             let originalData = Data(fileName: fileName)
-            let originalImage = DefaultImageProcessor.default.process(item: .data(originalData), options: [.preloadAllAnimationData])
+            let originalImage = DefaultImageProcessor.default.process(item: .data(originalData), options: .init([.preloadAllAnimationData]))
             
             XCTAssertTrue(decodedWebP?.images?.count == originalImage?.images?.count, fileName)
             
@@ -61,7 +61,7 @@ class KingfisherWebPTests: XCTestCase {
             let webpData = s.data(with: image, original: nil)
             XCTAssertNotNil(webpData, fileName)
             
-            let imageFromWebPData = s.image(with: webpData!, options: [.onlyLoadFirstFrame])
+            let imageFromWebPData = s.image(with: webpData!, options: .init([.onlyLoadFirstFrame]))
             XCTAssertNotNil(imageFromWebPData, fileName)
             
             XCTAssertTrue(image.renderEqual(to: imageFromWebPData!), fileName)
@@ -73,12 +73,12 @@ class KingfisherWebPTests: XCTestCase {
         
         animationFileNames.forEach { fileName in
             let originalData = Data(fileName: fileName)
-            let originalImage = DefaultImageProcessor.default.process(item: .data(originalData), options: [])!
+            let originalImage = DefaultImageProcessor.default.process(item: .data(originalData), options: .init([]))!
             
             let webpData = s.data(with: originalImage, original: nil)
             XCTAssertNotNil(webpData, fileName)
             
-            let imageFromWebPData = s.image(with: webpData!, options: [])
+            let imageFromWebPData = s.image(with: webpData!, options: .init([]))
             XCTAssertNotNil(imageFromWebPData, fileName)
 
             XCTAssertTrue(imageFromWebPData?.images?.count == originalImage.images?.count, fileName)
@@ -94,7 +94,7 @@ class KingfisherWebPTests: XCTestCase {
         let s = WebPSerializer.default
         let images = fileNames.compactMap { fileName -> KFCrossPlatformImage? in
             let data = Data(fileName: fileName)
-            return DefaultImageProcessor.default.process(item: .data(data), options: [])
+            return DefaultImageProcessor.default.process(item: .data(data), options: .init([]))
         }
         
         measure {
@@ -111,7 +111,7 @@ class KingfisherWebPTests: XCTestCase {
         }
         measure {
             dataList.forEach {
-                let _ = p.process(item: .data($0), options: [])
+                let _ = p.process(item: .data($0), options: .init([]))
             }
         }
     }
