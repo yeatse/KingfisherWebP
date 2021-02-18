@@ -21,4 +21,4 @@ jobs:
           DESTINATION: platform=${{ matrix.destination }}
           SWIFT_VERSION: ${{ matrix.swift-version }}
         run: |
-          xcodebuild clean test -project KingfisherWebP.xcodeproj -scheme KingfisherWebP
+          xcodebuild clean test -project KingfisherWebP.xcodeproj -scheme KingfisherWebP -destination "${DESTINATION}"
