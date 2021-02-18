@@ -19,7 +19,7 @@ KingfisherWebP is an extension of the popular library [Kingfisher](https://githu
   s.watchos.deployment_target = '3.0'
   s.osx.deployment_target = '10.12'
 
-  s.frameworkds = "Accelerate"
+  s.frameworks = "Accelerate"
 
   s.source_files = 'Sources/**/*.{h,m,swift}'
   s.pod_target_xcconfig = {
