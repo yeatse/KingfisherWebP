@@ -14,23 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-               BuildableName = "KingfisherWebP_Example.app"
-               BlueprintName = "KingfisherWebP_Example"
-               ReferencedContainer = "container:KingfisherWebP.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "607FACE41AFB9204008FA782"
-               BuildableName = "KingfisherWebP_Tests.xctest"
-               BlueprintName = "KingfisherWebP_Tests"
+               BlueprintIdentifier = "38E23F1E2591B68900EBE21D"
+               BuildableName = "KingfisherWebP.framework"
+               BlueprintName = "KingfisherWebP"
                ReferencedContainer = "container:KingfisherWebP.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -41,23 +27,14 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "KingfisherWebP_Example.app"
-            BlueprintName = "KingfisherWebP_Example"
-            ReferencedContainer = "container:KingfisherWebP.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
       <Testables>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "607FACE41AFB9204008FA782"
-               BuildableName = "KingfisherWebP_Tests.xctest"
-               BlueprintName = "KingfisherWebP_Tests"
+               BlueprintIdentifier = "38E23F272591B68900EBE21D"
+               BuildableName = "KingfisherWebPTests.xctest"
+               BlueprintName = "KingfisherWebPTests"
                ReferencedContainer = "container:KingfisherWebP.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -73,16 +50,6 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "KingfisherWebP_Example.app"
-            BlueprintName = "KingfisherWebP_Example"
-            ReferencedContainer = "container:KingfisherWebP.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -90,16 +57,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "KingfisherWebP_Example.app"
-            BlueprintName = "KingfisherWebP_Example"
+            BlueprintIdentifier = "38E23F1E2591B68900EBE21D"
+            BuildableName = "KingfisherWebP.framework"
+            BlueprintName = "KingfisherWebP"
             ReferencedContainer = "container:KingfisherWebP.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

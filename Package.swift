@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "KingfisherWebP",
-    platforms: [.iOS(.v10), .tvOS(.v10), .watchOS(.v3)], 
+    platforms: [.iOS(.v10), .tvOS(.v10), .watchOS(.v3), .macOS(.v10_12)], 
     products: [
         .library(name: "KingfisherWebP", targets: ["KingfisherWebP"])
     ],
@@ -17,15 +17,15 @@ let package = Package(
         .target(
             name: "KingfisherWebP-ObjC",
             dependencies: ["libwebp"],
-            path: "KingfisherWebP",
-            sources: ["Classes/CGImage+WebP.h", "Classes/CGImage+WebP.m"],
-            publicHeadersPath: "Classes"
+            path: "Sources",
+            sources: ["CGImage+WebP.h", "CGImage+WebP.m"],
+            publicHeadersPath: "Sources"
         ),
         .target(
             name: "KingfisherWebP",
             dependencies: ["Kingfisher", "KingfisherWebP-ObjC"],
-            path: "KingfisherWebP",
-            exclude: ["Classes/CGImage+WebP.h", "Classes/CGImage+WebP.m"]
+            path: "Sources",
+            exclude: ["CGImage+WebP.h", "CGImage+WebP.m"]
         )
     ]
 )

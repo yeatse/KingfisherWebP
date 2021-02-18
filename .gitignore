@@ -38,8 +38,7 @@ Pods/
 # Packages/
 Package.pins
 Package.resolved
-*.xcodeproj
-#
+
 # Xcode automatically generates this directory with a .xcworkspacedata file and xcuserdata
 # hence it is not needed unless you have added a package configuration file to your project
 .swiftpm

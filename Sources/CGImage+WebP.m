@@ -9,10 +9,18 @@
 #import "CGImage+WebP.h"
 
 #import <Accelerate/Accelerate.h>
-#import "webp/decode.h"
-#import "webp/encode.h"
-#import "webp/demux.h"
-#import "webp/mux.h"
+#import <CoreFoundation/CoreFoundation.h>
+#if __has_include(<webp/decode.h>)
+#import <webp/decode.h>
+#import <webp/encode.h>
+#import <webp/demux.h>
+#import <webp/mux.h>
+#else
+#import "decode.h"
+#import "encode.h"
+#import "demux.h"
+#import "mux.h"
+#endif
 
 #pragma mark - Helper Functions
 

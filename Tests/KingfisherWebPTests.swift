@@ -1,4 +1,15 @@
+//
+//  KingfisherWebPTests.swift
+//  KingfisherWebPTests
+//
+//  Created by yeatse on 2020/12/22.
+//
+#if os(macOS)
+import AppKit
+#else
 import UIKit
+#endif
+
 import XCTest
 import Kingfisher
 @testable import KingfisherWebP
@@ -31,7 +42,23 @@ class KingfisherWebPTests: XCTestCase {
             XCTAssertTrue(decodedWebP!.renderEqual(to: originalImage), fileName)
         }
     }
-
+    
+    #if os(macOS)
+    func testMultipleFramesDecoding() {
+        let p = WebPProcessor.default
+        
+        animationFileNames.forEach { fileName in
+            let webpData = Data(fileName: (fileName as NSString).deletingPathExtension, extension: "webp")
+            let decodedWebP = p.process(item: .data(webpData), options: .init([]))
+            XCTAssertNotNil(decodedWebP, fileName)
+            
+            let originalData = Data(fileName: fileName)
+            let originalImage = DefaultImageProcessor.default.process(item: .data(originalData), options: .init([.onlyLoadFirstFrame]))
+            
+            XCTAssertTrue(decodedWebP!.renderEqual(to: originalImage!), "The first frame should be equal")
+        }
+    }
+    #else
     func testMultipleFramesDecoding() {
         let p = WebPProcessor.default
         
@@ -51,6 +78,7 @@ class KingfisherWebPTests: XCTestCase {
             }
         }
     }
+    #endif
     
     func testSingleFrameEncoding() {
         let s = WebPSerializer.default
@@ -68,6 +96,24 @@ class KingfisherWebPTests: XCTestCase {
         }
     }
 
+    #if os(macOS)
+    func testMultipleFrameEncoding() {
+        let s = WebPSerializer.default
+        
+        animationFileNames.forEach { fileName in
+            let originalData = Data(fileName: fileName)
+            let originalImage = DefaultImageProcessor.default.process(item: .data(originalData), options: .init([]))!
+            
+            let webpData = s.data(with: originalImage, original: nil)
+            XCTAssertNotNil(webpData, fileName)
+            
+            let imageFromWebPData = s.image(with: webpData!, options: .init([]))
+            XCTAssertNotNil(imageFromWebPData, fileName)
+
+            XCTAssertTrue(imageFromWebPData!.renderEqual(to: originalImage), "The first frame should be equal")
+        }
+    }
+    #else
     func testMultipleFrameEncoding() {
         let s = WebPSerializer.default
         
@@ -89,6 +135,7 @@ class KingfisherWebPTests: XCTestCase {
             }
         }
     }
+    #endif
     
     func testEncodingPerformance() {
         let s = WebPSerializer.default
@@ -127,14 +174,29 @@ extension Data {
 
 // Copied from Kingfisher project
 extension KFCrossPlatformImage {
+    var kfCGImage: CGImage? {
+        #if os(macOS)
+        return cgImage(forProposedRect: nil, context: nil, hints: nil)
+        #else
+        return cgImage
+        #endif
+    }
+    
     func renderEqual(to image: KFCrossPlatformImage, withinTolerance tolerance: UInt8 = 3, tolerancePercent: Double = 0) -> Bool {
-
         guard size == image.size else { return false }
+        #if os(macOS)
+        let pngRep = { (image: KFCrossPlatformImage) -> Data? in
+            let rep = self.kfCGImage.map { NSBitmapImageRep(cgImage: $0) }
+            return rep?.representation(using: .png, properties: [:])
+        }
+        guard let imageData1 = pngRep(self), let imageData2 = pngRep(image) else { return false }
+        #else
         guard let imageData1 = pngData(), let imageData2 = image.pngData() else { return false }
+        #endif
         guard let unifiedImage1 = KFCrossPlatformImage(data: imageData1), let unifiedImage2 = KFCrossPlatformImage(data: imageData2) else { return false }
 
         guard let rendered1 = unifiedImage1.rendered(), let rendered2 = unifiedImage2.rendered() else { return false }
-        guard let data1 = rendered1.cgImage?.dataProvider?.data, let data2 = rendered2.cgImage?.dataProvider?.data else { return false }
+        guard let data1 = rendered1.kfCGImage?.dataProvider?.data, let data2 = rendered2.kfCGImage?.dataProvider?.data else { return false }
 
         let length1 = CFDataGetLength(data1)
         let length2 = CFDataGetLength(data2)
@@ -161,7 +223,7 @@ extension KFCrossPlatformImage {
 
     func rendered() -> KFCrossPlatformImage? {
         // Ignore non CG images
-        guard let cgImage = cgImage else {
+        guard let cgImage = kfCGImage else {
             return nil
         }
 
@@ -197,9 +259,10 @@ extension KFCrossPlatformImage {
         context.draw(cgImage, in: CGRect(origin: CGPoint.zero, size: size))
 
         #if os(macOS)
-            return context.makeImage().flatMap { KFCrossPlatformImage(cgImage: $0, size: kf.size) }
+        return context.makeImage().flatMap { KFCrossPlatformImage(cgImage: $0, size: .zero) }
         #else
-            return context.makeImage().flatMap { KFCrossPlatformImage(cgImage: $0) }
+        return context.makeImage().flatMap { KFCrossPlatformImage(cgImage: $0) }
         #endif
     }
 }
+

@@ -1,0 +1,11 @@
+KingfisherWebP:
+  project: KingfisherWebP.xcodeproj
+  sdks:
+  - watchsimulator
+  - iphonesimulator
+  - appletvsimulator
+  - watchos
+  - appletvos
+  - iphoneos
+  - macosx
+
