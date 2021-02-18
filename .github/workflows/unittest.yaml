@@ -11,7 +11,8 @@ jobs:
           'macOS', 
           'iOS Simulator,name=iPhone 8', 
           'tvOS Simulator,name=Apple TV', 
-          'watchOS Simulator,name=Apple Watch Series 5 - 40mm'
+#           XCTest for watchOS is not available until Xcode 12.5
+#          'watchOS Simulator,name=Apple Watch Series 5 - 40mm'
         ]
         swift-version: [5.0]
     steps:
