@@ -1,6 +1,6 @@
 # KingfisherWebP
 
-[![CI Status](http://img.shields.io/travis/Yeatse/KingfisherWebP.svg?style=flat)](https://travis-ci.org/Yeatse/KingfisherWebP)
+[![CI Status](https://github.com/Yeatse/KingfisherWebP/workflows/unittest/badge.svg)](https://travis-ci.org/Yeatse/KingfisherWebP)
 [![Version](https://img.shields.io/cocoapods/v/KingfisherWebP.svg?style=flat)](http://cocoapods.org/pods/KingfisherWebP)
 [![License](https://img.shields.io/cocoapods/l/KingfisherWebP.svg?style=flat)](http://cocoapods.org/pods/KingfisherWebP)
 [![Platform](https://img.shields.io/cocoapods/p/KingfisherWebP.svg?style=flat)](http://cocoapods.org/pods/KingfisherWebP)
