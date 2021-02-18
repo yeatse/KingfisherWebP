@@ -36,7 +36,7 @@
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* KingfisherWebPTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KingfisherWebPTests.swift; sourceTree = "<group>"; };
 		7B8DF0C5D391E104D17A322F /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
-		BC1668044057334C209DECF6 /* KingfisherWebP.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = KingfisherWebP.podspec; path = ../KingfisherWebP.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		BC1668044057334C209DECF6 /* KingfisherWebP.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = KingfisherWebP.podspec; path = ../KingfisherWebP.podspec; sourceTree = "<group>"; };
 		E64623EFC52785C2C626785E /* Pods-KingfisherWebP_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KingfisherWebP_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-KingfisherWebP_Tests/Pods-KingfisherWebP_Tests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
