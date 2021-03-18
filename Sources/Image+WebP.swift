@@ -62,13 +62,17 @@ extension KingfisherWrapper where Base: KFCrossPlatformImage {
         guard let cgImage = WebPImageCreateWithData(webpData as CFData) else {
             return nil
         }
-        return KFCrossPlatformImage(cgImage: cgImage, size: .zero)
+        let image = KFCrossPlatformImage(cgImage: cgImage, size: .zero)
+        image.kf.imageFrameCount = Int(frameCount)
+        return image
         #else
         if (frameCount == 1 || onlyFirstFrame) {
             guard let cgImage = WebPImageCreateWithData(webpData as CFData) else {
                 return nil
             }
-            return KFCrossPlatformImage(cgImage: cgImage, scale: scale, orientation: .up)
+            let image = KFCrossPlatformImage(cgImage: cgImage, scale: scale, orientation: .up)
+            image.kf.imageFrameCount = Int(frameCount)
+            return image
         }
 
         // MARK: Animated images
@@ -80,7 +84,9 @@ extension KingfisherWrapper where Base: KFCrossPlatformImage {
         }
         let uiFrames = cgFrames.map { KFCrossPlatformImage(cgImage: $0, scale: scale, orientation: .up) }
         let duration = (animationInfo[kWebPAnimatedImageDuration] as? NSNumber).flatMap { $0.doubleValue as TimeInterval } ?? 0.1 * TimeInterval(frameCount)
-        return KFCrossPlatformImage.animatedImage(with: uiFrames, duration: duration)
+        let image = KFCrossPlatformImage.animatedImage(with: uiFrames, duration: duration)
+        image?.kf.imageFrameCount = Int(frameCount)
+        return image
         #endif
     }
 }
