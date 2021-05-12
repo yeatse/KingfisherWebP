@@ -14,8 +14,6 @@
 		38E23F432591B75200EBE21D /* WebPSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E23F402591B75200EBE21D /* WebPSerializer.swift */; };
 		38E23F442591B75200EBE21D /* WebPProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E23F412591B75200EBE21D /* WebPProcessor.swift */; };
 		38E23F452591B75200EBE21D /* Image+WebP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E23F422591B75200EBE21D /* Image+WebP.swift */; };
-		38E23F692591B9A800EBE21D /* CGImage+WebP.m in Sources */ = {isa = PBXBuildFile; fileRef = 38E23F672591B9A700EBE21D /* CGImage+WebP.m */; };
-		38E23F6A2591B9A800EBE21D /* CGImage+WebP.h in Headers */ = {isa = PBXBuildFile; fileRef = 38E23F682591B9A800EBE21D /* CGImage+WebP.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		38E23F752591BBB000EBE21D /* libwebp in Frameworks */ = {isa = PBXBuildFile; productRef = 38E23F742591BBB000EBE21D /* libwebp */; };
 		38E23FB02591C39C00EBE21D /* cover.webp in Resources */ = {isa = PBXBuildFile; fileRef = 38E23FA82591C39C00EBE21D /* cover.webp */; };
 		38E23FB12591C39C00EBE21D /* kingfisher.webp in Resources */ = {isa = PBXBuildFile; fileRef = 38E23FA92591C39C00EBE21D /* kingfisher.webp */; };
@@ -25,6 +23,8 @@
 		38E23FB52591C39C00EBE21D /* animation.webp in Resources */ = {isa = PBXBuildFile; fileRef = 38E23FAD2591C39C00EBE21D /* animation.webp */; };
 		38E23FB62591C39C00EBE21D /* cover.png in Resources */ = {isa = PBXBuildFile; fileRef = 38E23FAE2591C39C00EBE21D /* cover.png */; };
 		38E23FB72591C39C00EBE21D /* animation.gif in Resources */ = {isa = PBXBuildFile; fileRef = 38E23FAF2591C39C00EBE21D /* animation.gif */; };
+		FEAA17F3264BF9CA00B1C2E7 /* CGImage+WebP.m in Sources */ = {isa = PBXBuildFile; fileRef = FEAA17F0264BF9CA00B1C2E7 /* CGImage+WebP.m */; };
+		FEAA17F4264BF9CA00B1C2E7 /* CGImage+WebP.h in Headers */ = {isa = PBXBuildFile; fileRef = FEAA17F2264BF9CA00B1C2E7 /* CGImage+WebP.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,8 +47,6 @@
 		38E23F402591B75200EBE21D /* WebPSerializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebPSerializer.swift; sourceTree = "<group>"; };
 		38E23F412591B75200EBE21D /* WebPProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebPProcessor.swift; sourceTree = "<group>"; };
 		38E23F422591B75200EBE21D /* Image+WebP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Image+WebP.swift"; sourceTree = "<group>"; };
-		38E23F672591B9A700EBE21D /* CGImage+WebP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CGImage+WebP.m"; sourceTree = "<group>"; };
-		38E23F682591B9A800EBE21D /* CGImage+WebP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CGImage+WebP.h"; sourceTree = "<group>"; };
 		38E23FA82591C39C00EBE21D /* cover.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = cover.webp; sourceTree = "<group>"; };
 		38E23FA92591C39C00EBE21D /* kingfisher.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = kingfisher.webp; sourceTree = "<group>"; };
 		38E23FAA2591C39C00EBE21D /* logo.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = logo.webp; sourceTree = "<group>"; };
@@ -57,6 +55,8 @@
 		38E23FAD2591C39C00EBE21D /* animation.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = animation.webp; sourceTree = "<group>"; };
 		38E23FAE2591C39C00EBE21D /* cover.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cover.png; sourceTree = "<group>"; };
 		38E23FAF2591C39C00EBE21D /* animation.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = animation.gif; sourceTree = "<group>"; };
+		FEAA17F0264BF9CA00B1C2E7 /* CGImage+WebP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CGImage+WebP.m"; sourceTree = "<group>"; };
+		FEAA17F2264BF9CA00B1C2E7 /* CGImage+WebP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CGImage+WebP.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,9 +101,8 @@
 		38E23F212591B68900EBE21D /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				FEAA17EF264BF9CA00B1C2E7 /* KingfisherWebP-ObjC */,
 				38E23F222591B68900EBE21D /* KingfisherWebP.h */,
-				38E23F682591B9A800EBE21D /* CGImage+WebP.h */,
-				38E23F672591B9A700EBE21D /* CGImage+WebP.m */,
 				38E23F422591B75200EBE21D /* Image+WebP.swift */,
 				38E23F412591B75200EBE21D /* WebPProcessor.swift */,
 				38E23F402591B75200EBE21D /* WebPSerializer.swift */,
@@ -137,6 +136,23 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		FEAA17EF264BF9CA00B1C2E7 /* KingfisherWebP-ObjC */ = {
+			isa = PBXGroup;
+			children = (
+				FEAA17F0264BF9CA00B1C2E7 /* CGImage+WebP.m */,
+				FEAA17F1264BF9CA00B1C2E7 /* include */,
+			);
+			path = "KingfisherWebP-ObjC";
+			sourceTree = "<group>";
+		};
+		FEAA17F1264BF9CA00B1C2E7 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				FEAA17F2264BF9CA00B1C2E7 /* CGImage+WebP.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -144,7 +160,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				38E23F6A2591B9A800EBE21D /* CGImage+WebP.h in Headers */,
+				FEAA17F4264BF9CA00B1C2E7 /* CGImage+WebP.h in Headers */,
 				38E23F302591B68900EBE21D /* KingfisherWebP.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -266,7 +282,7 @@
 				38E23F452591B75200EBE21D /* Image+WebP.swift in Sources */,
 				38E23F442591B75200EBE21D /* WebPProcessor.swift in Sources */,
 				38E23F432591B75200EBE21D /* WebPSerializer.swift in Sources */,
-				38E23F692591B9A800EBE21D /* CGImage+WebP.m in Sources */,
+				FEAA17F3264BF9CA00B1C2E7 /* CGImage+WebP.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
