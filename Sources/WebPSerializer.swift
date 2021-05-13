@@ -6,8 +6,9 @@
 //
 //
 
-import Kingfisher
 import CoreGraphics
+import Foundation
+import Kingfisher
 
 public struct WebPSerializer: CacheSerializer {
     public static let `default` = WebPSerializer()

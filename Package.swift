@@ -15,17 +15,14 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "KingfisherWebP-ObjC",
-            dependencies: ["libwebp"],
-            path: "Sources",
-            sources: ["CGImage+WebP.h", "CGImage+WebP.m"],
-            publicHeadersPath: "Sources"
-        ),
-        .target(
             name: "KingfisherWebP",
             dependencies: ["Kingfisher", "KingfisherWebP-ObjC"],
             path: "Sources",
-            exclude: ["CGImage+WebP.h", "CGImage+WebP.m"]
+            exclude: ["KingfisherWebP-ObjC"]
+        ),
+        .target(
+            name: "KingfisherWebP-ObjC",
+            dependencies: ["libwebp"]
         )
     ]
 )
