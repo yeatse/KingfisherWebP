@@ -5,12 +5,12 @@ import PackageDescription
 
 let package = Package(
     name: "KingfisherWebP",
-    platforms: [.iOS(.v10), .tvOS(.v10), .watchOS(.v3), .macOS(.v10_12)], 
+    platforms: [.iOS(.v12), .tvOS(.v12), .watchOS(.v5), .macOS(.v10_14)], 
     products: [
         .library(name: "KingfisherWebP", targets: ["KingfisherWebP"])
     ],
     dependencies: [
-        .package(url: "https://github.com/onevcat/Kingfisher.git", from: "6.2.0"),
+        .package(url: "https://github.com/onevcat/Kingfisher.git", from: "7.0.0"),
         .package(url: "https://github.com/SDWebImage/libwebp-Xcode", from: "1.1.0")
     ],
     targets: [
