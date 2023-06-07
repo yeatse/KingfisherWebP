@@ -269,6 +269,11 @@ CGImageRef WebPImageCreateWithData(CFDataRef webpData) {
     
     const size_t bufSize = anim_info.canvas_width * 4 * anim_info.canvas_height;
     void *bufCopy = malloc(bufSize);
+    if (!bufCopy) {
+        WebPAnimDecoderDelete(dec);
+        return NULL;
+    }
+    
     memcpy(bufCopy, buf, bufSize);
     WebPAnimDecoderDelete(dec);
         
@@ -374,6 +379,9 @@ CFDictionaryRef WebPAnimatedImageInfoCreateWithData(CFDataRef webpData) {
         
         const size_t bufSize = anim_info.canvas_width * 4 * anim_info.canvas_height;
         void *bufCopy = malloc(bufSize);
+        if (!bufCopy) {
+            break;
+        }
         memcpy(bufCopy, buf, bufSize);
         
         CGDataProviderRef provider = CGDataProviderCreateWithData(bufCopy, bufCopy, bufSize, WebPFreeInfoReleaseDataCallback);
