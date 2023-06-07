@@ -33,7 +33,7 @@ static void WebPFreeInfoReleaseDataCallback(void *info, const void *data, size_t
     }
 }
 
-static CGColorSpaceRef WebPColorSpaceForDeviceRGB() {
+static CGColorSpaceRef WebPColorSpaceForDeviceRGB(void) {
     static CGColorSpaceRef colorSpace;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
