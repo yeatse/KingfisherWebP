@@ -9,10 +9,9 @@ jobs:
       matrix:
         destination: [
           'macOS', 
-          'iOS Simulator,name=iPhone 8', 
-          'tvOS Simulator,name=Apple TV', 
-#           XCTest for watchOS is not available until Xcode 12.5
-#          'watchOS Simulator,name=Apple Watch Series 5 - 40mm'
+          'iOS Simulator,name=iPhone 14', 
+          'tvOS Simulator,name=Apple TV 4K (3rd generation)', 
+          'watchOS Simulator,name=Apple Watch Series 8 (45mm)'
         ]
         swift-version: [5.0]
     steps:
