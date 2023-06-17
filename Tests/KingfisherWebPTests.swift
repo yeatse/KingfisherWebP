@@ -9,6 +9,7 @@ import AppKit
 #else
 import UIKit
 #endif
+import ImageIO
 
 import XCTest
 import Kingfisher
