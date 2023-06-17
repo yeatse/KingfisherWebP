@@ -54,10 +54,9 @@ class KingfisherWebPTests: XCTestCase {
             XCTAssertNotNil(decodedWebP, fileName)
             
             let originalData = Data(fileName: fileName)
-            let originalImage = DefaultImageProcessor.default.process(item: .data(originalData), options: .init([.onlyLoadFirstFrame]))
+            let originalImage = KingfisherWrapper.animatedImage(data: originalData, options: .init())
             
             XCTAssertEqual(decodedWebP?.kf.imageFrameCount, originalImage?.kf.imageFrameCount)
-            
             XCTAssertTrue(decodedWebP!.renderEqual(to: originalImage!), "The first frame should be equal")
         }
     }
