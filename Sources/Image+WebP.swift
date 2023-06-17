@@ -121,7 +121,7 @@ class WebPFrameSource: ImageFrameSource {
             return nil
         }
         if let maxSize = maxSize, maxSize != .zero, CGFloat(image.width) > maxSize.width || CGFloat(image.height) > maxSize.height {
-            let scale = max(maxSize.width / CGFloat(image.width), maxSize.height / CGFloat(image.height))
+            let scale = min(maxSize.width / CGFloat(image.width), maxSize.height / CGFloat(image.height))
             let destWidth = Int(CGFloat(image.width) * scale)
             let destHeight = Int(CGFloat(image.height) * scale)
             let context = CGContext(data: nil,
@@ -139,7 +139,13 @@ class WebPFrameSource: ImageFrameSource {
     }
     
     func duration(at index: Int) -> TimeInterval {
-        return TimeInterval(WebPDecoderGetDurationAtIndex(decoder, Int32(index)))
+        let duration = WebPDecoderGetDurationAtIndex(decoder, Int32(index))
+        // https://github.com/onevcat/Kingfisher/blob/3f6992b5cd3143e83b02300ea59c400d4cf0747a/Sources/Image/GIFAnimatedImage.swift#L106
+        if duration > 0.011 {
+            return duration
+        } else {
+            return 0.1
+        }
     }
 }
 

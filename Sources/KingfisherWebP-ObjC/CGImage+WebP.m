@@ -529,41 +529,90 @@ CFTimeInterval WebPDecoderGetDurationAtIndex(WebPDecoderRef decoder, int index) 
     return duration;
 }
 
+// Returns true if the frame covers the full canvas.
+static int IsFullFrame(int width, int height, int canvas_width,
+                       int canvas_height) {
+  return (width == canvas_width && height == canvas_height);
+}
+
+// Returns true if the current frame is a key-frame.
+static int IsKeyFrame(const WebPIterator* const curr,
+                      const WebPIterator* const prev,
+                      int canvas_width, int canvas_height) {
+  if (curr->frame_num == 1) {
+    return 1;
+  } else if ((!curr->has_alpha || curr->blend_method == WEBP_MUX_NO_BLEND) &&
+             IsFullFrame(curr->width, curr->height, canvas_width, canvas_height)) {
+    return 1;
+  } else {
+    return prev->dispose_method == WEBP_MUX_DISPOSE_BACKGROUND &&
+           IsFullFrame(prev->width, prev->height, canvas_width, canvas_height);
+  }
+}
+
 CGImageRef WebPDecoderCopyImageAtIndex(WebPDecoderRef decoder, int index) {
     WebPAnimInfo info;
     if (!WebPAnimDecoderGetInfo(decoder->dec, &info)) {
         return NULL;
     }
-    // In animated webp images, a single frame may blend with the previous one. To ensure that we get
-    // the correct image, we decode not only the current frame but also all of its predecessors. While
-    // this approach may be slow for random index access, it is performant in Kingfisher scenarios as it
-    // is typical for frames to be accessed continuously.
-    uint8_t *buf;
-    int duration;
-    if (index == 0 || decoder->currentIndex > index) {
-        WebPAnimDecoderReset(decoder->dec);
-        decoder->currentIndex = 0;
-        if (!WebPAnimDecoderGetNext(decoder->dec, &buf, &duration)) {
-            return NULL;
+    
+    void *buffer = NULL;
+    const size_t bufSize = info.canvas_width * info.canvas_height * 4;
+    
+    // decode directly if target index is key frame
+    if (index > 0 && index != decoder->currentIndex + 1) {
+        const WebPDemuxer *demux = WebPAnimDecoderGetDemuxer(decoder->dec);
+        WebPIterator prev;
+        if (!WebPDemuxGetFrame(demux, index, &prev)) {
+            goto anim_decoder;
         }
-    }
-    while (decoder->currentIndex < index) {
-        if (!WebPAnimDecoderGetNext(decoder->dec, &buf, &duration)) {
-            return NULL;
+        WebPIterator curr;
+        if (!WebPDemuxGetFrame(demux, index + 1, &curr)) {
+            WebPDemuxReleaseIterator(&prev);
+            goto anim_decoder;
         }
-        decoder->currentIndex ++;
+        int is_key_frame = IsKeyFrame(&curr, &prev, info.canvas_width, info.canvas_height);
+        if (is_key_frame) {
+            int width, height;
+            buffer = WebPDecodeRGBA(curr.fragment.bytes, curr.fragment.size, &width, &height);
+            if (width != info.canvas_width || height != info.canvas_height) {
+                free(buffer); // fallback
+                buffer = NULL;
+            }
+        }
+        WebPDemuxReleaseIterator(&prev);
+        WebPDemuxReleaseIterator(&curr);
     }
     
-    const size_t bufSize = info.canvas_width * info.canvas_height * 4;
-    void *bufCopy = malloc(bufSize);
-    if (!bufCopy) {
-        return NULL;
+anim_decoder:
+    if (!buffer) {
+        // In animated webp images, a single frame may blend with the previous one. To ensure that we get
+        // the correct image, we decode not only the current frame but also all of its predecessors. While
+        // this approach may be slow for random index access, it is performant in Kingfisher scenarios as it
+        // is typical for frames to be accessed continuously.
+        uint8_t *buf;
+        int duration;
+        if (index == 0 || decoder->currentIndex >= index) {
+            WebPAnimDecoderReset(decoder->dec);
+            decoder->currentIndex = 0;
+            if (!WebPAnimDecoderGetNext(decoder->dec, &buf, &duration)) {
+                return NULL;
+            }
+        }
+        while (decoder->currentIndex < index) {
+            if (!WebPAnimDecoderGetNext(decoder->dec, &buf, &duration)) {
+                return NULL;
+            }
+            decoder->currentIndex ++;
+        }
+        buffer = malloc(bufSize);
+        if (!buffer) {
+            return NULL;
+        }
+        memcpy(buffer, buf, bufSize);
     }
-    memcpy(bufCopy, buf, bufSize);
-    CGDataProviderRef provider = CGDataProviderCreateWithData(bufCopy, bufCopy, bufSize, WebPFreeInfoReleaseDataCallback);
+    CGDataProviderRef provider = CGDataProviderCreateWithData(buffer, buffer, bufSize, WebPFreeInfoReleaseDataCallback);
     CGImageRef image = CGImageCreate(info.canvas_width, info.canvas_height, 8, 32, info.canvas_width * 4, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaPremultipliedLast | kCGBitmapByteOrderDefault, provider, NULL, false, kCGRenderingIntentDefault);
     CGDataProviderRelease(provider);
     return image;
 }
-
-

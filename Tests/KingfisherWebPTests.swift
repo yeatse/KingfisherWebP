@@ -104,6 +104,12 @@ class KingfisherWebPTests: XCTestCase {
                 let originalFrame = UIImage(cgImage: CGImageSourceCreateImageAtIndex(originImageSource, index, nil)!)
                 XCTAssertTrue(webpFrame.renderEqual(to: originalFrame), "Frame \(index) of \(fileName) should be equal")
             }
+            
+            for index in (0..<webpImageSource.frameCount).reversed() {
+                let webpFrame = UIImage(cgImage: webpImageSource.frame(at: index)!)
+                let originalFrame = UIImage(cgImage: CGImageSourceCreateImageAtIndex(originImageSource, index, nil)!)
+                XCTAssertTrue(webpFrame.renderEqual(to: originalFrame), "Frame \(index) of \(fileName) should be equal")
+            }
         }
     }
     #endif
