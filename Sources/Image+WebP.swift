@@ -92,14 +92,19 @@ class WebPFrameSource: ImageFrameSource {
         // https://github.com/onevcat/Kingfisher/blob/3f6992b5cd3143e83b02300ea59c400d4cf0747a/Sources/General/KingfisherManager.swift#L562
         self.data = nil
         self.decoder = decoder
+        // http://www.russbishop.net/the-law
+        self.decoderLock = UnsafeMutablePointer<os_unfair_lock>.allocate(capacity: 1)
+        self.decoderLock.initialize(to: os_unfair_lock())
     }
     
     deinit {
         WebPDecoderDestroy(decoder)
+        decoderLock.deallocate()
     }
     
     let data: Data?
     private let decoder: WebPDecoderRef
+    private var decoderLock: UnsafeMutablePointer<os_unfair_lock>
     
     var frameCount: Int {
         get {
@@ -108,6 +113,10 @@ class WebPFrameSource: ImageFrameSource {
     }
     
     func frame(at index: Int, maxSize: CGSize?) -> CGImage? {
+        os_unfair_lock_lock(decoderLock)
+        defer {
+            os_unfair_lock_unlock(decoderLock)
+        }
         guard let image = WebPDecoderCopyImageAtIndex(decoder, Int32(index)) else {
             return nil
         }
