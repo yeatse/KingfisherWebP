@@ -19,10 +19,15 @@ public struct WebPSerializer: CacheSerializer {
     /// The compression quality when converting image to a lossy format data. Default is 1.0.
     public var compressionQuality: CGFloat = 1.0
     
+    /// See ```CacheSerializer/originalDataUsed```
+    public var originalDataUsed: Bool = true
+    
     private init() {}
 
     public func data(with image: KFCrossPlatformImage, original: Data?) -> Data? {
-        if let original = original, !original.isWebPFormat {
+        if let original = original, originalDataUsed {
+            return original
+        } else if let original = original, !original.isWebPFormat {
             return DefaultCacheSerializer.default.data(with: image, original: original)
         } else {
             let qualityInWebp = min(max(0, compressionQuality), 1) * 100

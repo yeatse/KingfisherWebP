@@ -472,3 +472,98 @@ CFDataRef WebPDataCreateWithAnimatedImageInfo(CFDictionaryRef imageInfo, bool is
     
     return data;
 }
+
+struct WebPImageDecoder {
+    WebPAnimDecoder *dec;
+    WebPData webpData;
+    CFDataRef cfData;
+    int currentIndex;
+};
+
+WebPDecoderRef WebPDecoderCreateWithData(CFDataRef webpData) {
+    WebPDecoderRef decoder = calloc(1, sizeof(struct WebPImageDecoder));
+    if (!decoder) {
+        return NULL;
+    }
+    
+    WebPAnimDecoderOptions dec_options;
+    WebPAnimDecoderOptionsInit(&dec_options);
+    dec_options.use_threads = 1;
+    dec_options.color_mode = MODE_rgbA;
+    
+    decoder->webpData.bytes = (uint8_t *)CFDataGetBytePtr(webpData);
+    decoder->webpData.size = CFDataGetLength(webpData);
+    decoder->dec = WebPAnimDecoderNew(&decoder->webpData, &dec_options);
+    
+    if (!decoder->dec) {
+        free(decoder);
+        return NULL;
+    }
+    
+    decoder->cfData = CFRetain(webpData);
+    return decoder;
+}
+
+void WebPDecoderDestroy(WebPDecoderRef decoder) {
+    WebPAnimDecoderDelete(decoder->dec);
+    CFRelease(decoder->cfData);
+    free(decoder);
+}
+
+uint32_t WebPDecoderGetFrameCount(WebPDecoderRef decoder) {
+    WebPAnimInfo info;
+    if (!WebPAnimDecoderGetInfo(decoder->dec, &info)) {
+        return 0;
+    }
+    return info.frame_count;
+}
+
+CFTimeInterval WebPDecoderGetDurationAtIndex(WebPDecoderRef decoder, int index) {
+    WebPIterator iter;
+    const WebPDemuxer *demux = WebPAnimDecoderGetDemuxer(decoder->dec);
+    if (!WebPDemuxGetFrame(demux, index + 1, &iter)) {
+        return 0;
+    }
+    CFTimeInterval duration = iter.duration / 1000.0;
+    WebPDemuxReleaseIterator(&iter);
+    return duration;
+}
+
+CGImageRef WebPDecoderCopyImageAtIndex(WebPDecoderRef decoder, int index) {
+    WebPAnimInfo info;
+    if (!WebPAnimDecoderGetInfo(decoder->dec, &info)) {
+        return NULL;
+    }
+    // In animated webp images, a single frame may blend with the previous one. To ensure that we get
+    // the correct image, we decode not only the current frame but also all of its predecessors. While
+    // this approach may be slow for random index access, it is performant in Kingfisher scenarios as it
+    // is typical for frames to be accessed continuously.
+    uint8_t *buf;
+    int duration;
+    if (index == 0 || decoder->currentIndex > index) {
+        WebPAnimDecoderReset(decoder->dec);
+        decoder->currentIndex = 0;
+        if (!WebPAnimDecoderGetNext(decoder->dec, &buf, &duration)) {
+            return NULL;
+        }
+    }
+    while (decoder->currentIndex < index) {
+        if (!WebPAnimDecoderGetNext(decoder->dec, &buf, &duration)) {
+            return NULL;
+        }
+        decoder->currentIndex ++;
+    }
+    
+    const size_t bufSize = info.canvas_width * info.canvas_height * 4;
+    void *bufCopy = malloc(bufSize);
+    if (!bufCopy) {
+        return NULL;
+    }
+    memcpy(bufCopy, buf, bufSize);
+    CGDataProviderRef provider = CGDataProviderCreateWithData(bufCopy, bufCopy, bufSize, WebPFreeInfoReleaseDataCallback);
+    CGImageRef image = CGImageCreate(info.canvas_width, info.canvas_height, 8, 32, info.canvas_width * 4, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaPremultipliedLast | kCGBitmapByteOrderDefault, provider, NULL, false, kCGRenderingIntentDefault);
+    CGDataProviderRelease(provider);
+    return image;
+}
+
+

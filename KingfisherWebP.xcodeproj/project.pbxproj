@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 53;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		388B9BD02A3DAA0700FEAD72 /* heart.webp in Resources */ = {isa = PBXBuildFile; fileRef = 388B9BCF2A3DAA0700FEAD72 /* heart.webp */; };
 		38E23F292591B68900EBE21D /* KingfisherWebP.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38E23F1F2591B68900EBE21D /* KingfisherWebP.framework */; };
 		38E23F2E2591B68900EBE21D /* KingfisherWebPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E23F2D2591B68900EBE21D /* KingfisherWebPTests.swift */; };
 		38E23F302591B68900EBE21D /* KingfisherWebP.h in Headers */ = {isa = PBXBuildFile; fileRef = 38E23F222591B68900EBE21D /* KingfisherWebP.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -23,6 +24,7 @@
 		38E23FB52591C39C00EBE21D /* animation.webp in Resources */ = {isa = PBXBuildFile; fileRef = 38E23FAD2591C39C00EBE21D /* animation.webp */; };
 		38E23FB62591C39C00EBE21D /* cover.png in Resources */ = {isa = PBXBuildFile; fileRef = 38E23FAE2591C39C00EBE21D /* cover.png */; };
 		38E23FB72591C39C00EBE21D /* animation.gif in Resources */ = {isa = PBXBuildFile; fileRef = 38E23FAF2591C39C00EBE21D /* animation.gif */; };
+		38FDDBF82A3DFD8F00553E3C /* heart.png in Resources */ = {isa = PBXBuildFile; fileRef = 38FDDBF72A3DFD8F00553E3C /* heart.png */; };
 		FEAA17F3264BF9CA00B1C2E7 /* CGImage+WebP.m in Sources */ = {isa = PBXBuildFile; fileRef = FEAA17F0264BF9CA00B1C2E7 /* CGImage+WebP.m */; };
 		FEAA17F4264BF9CA00B1C2E7 /* CGImage+WebP.h in Headers */ = {isa = PBXBuildFile; fileRef = FEAA17F2264BF9CA00B1C2E7 /* CGImage+WebP.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
@@ -38,6 +40,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		388B9BCF2A3DAA0700FEAD72 /* heart.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = heart.webp; sourceTree = "<group>"; };
 		38E23F1F2591B68900EBE21D /* KingfisherWebP.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = KingfisherWebP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		38E23F222591B68900EBE21D /* KingfisherWebP.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KingfisherWebP.h; sourceTree = "<group>"; };
 		38E23F232591B68900EBE21D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -55,6 +58,7 @@
 		38E23FAD2591C39C00EBE21D /* animation.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = animation.webp; sourceTree = "<group>"; };
 		38E23FAE2591C39C00EBE21D /* cover.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cover.png; sourceTree = "<group>"; };
 		38E23FAF2591C39C00EBE21D /* animation.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = animation.gif; sourceTree = "<group>"; };
+		38FDDBF72A3DFD8F00553E3C /* heart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = heart.png; sourceTree = "<group>"; };
 		FEAA17F0264BF9CA00B1C2E7 /* CGImage+WebP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CGImage+WebP.m"; sourceTree = "<group>"; };
 		FEAA17F2264BF9CA00B1C2E7 /* CGImage+WebP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CGImage+WebP.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -132,6 +136,8 @@
 				38E23FAD2591C39C00EBE21D /* animation.webp */,
 				38E23FAE2591C39C00EBE21D /* cover.png */,
 				38E23FAF2591C39C00EBE21D /* animation.gif */,
+				388B9BCF2A3DAA0700FEAD72 /* heart.webp */,
+				38FDDBF72A3DFD8F00553E3C /* heart.png */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -214,8 +220,9 @@
 		38E23F162591B68900EBE21D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1230;
-				LastUpgradeCheck = 1230;
+				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					38E23F1E2591B68900EBE21D = {
 						CreatedOnToolsVersion = 12.3;
@@ -266,9 +273,11 @@
 				38E23FB42591C39C00EBE21D /* logo.png in Resources */,
 				38E23FB22591C39C00EBE21D /* logo.webp in Resources */,
 				38E23FB12591C39C00EBE21D /* kingfisher.webp in Resources */,
+				38FDDBF82A3DFD8F00553E3C /* heart.png in Resources */,
 				38E23FB52591C39C00EBE21D /* animation.webp in Resources */,
 				38E23FB62591C39C00EBE21D /* cover.png in Resources */,
 				38E23FB32591C39C00EBE21D /* kingfisher.jpg in Resources */,
+				388B9BD02A3DAA0700FEAD72 /* heart.webp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -340,6 +349,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -408,6 +418,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -440,10 +451,12 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
 				INFOPLIST_FILE = Sources/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -451,7 +464,9 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++14";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yeatse.KingfisherWebP;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -468,10 +483,12 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
 				INFOPLIST_FILE = Sources/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -479,7 +496,9 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++14";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yeatse.KingfisherWebP;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -495,13 +514,14 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
 				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yeatse.KingfisherWebPTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -516,13 +536,14 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
 				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yeatse.KingfisherWebPTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -570,7 +591,7 @@
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 7.0.0;
+				minimumVersion = 7.8.0;
 			};
 		};
 		38E23F732591BBB000EBE21D /* XCRemoteSwiftPackageReference "libwebp-Xcode" */ = {
