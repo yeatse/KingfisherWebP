@@ -139,7 +139,13 @@ class WebPFrameSource: ImageFrameSource {
     }
     
     func duration(at index: Int) -> TimeInterval {
-        return max(0.1, TimeInterval(WebPDecoderGetDurationAtIndex(decoder, Int32(index))))
+        let duration = WebPDecoderGetDurationAtIndex(decoder, Int32(index))
+        // https://github.com/onevcat/Kingfisher/blob/3f6992b5cd3143e83b02300ea59c400d4cf0747a/Sources/Image/GIFAnimatedImage.swift#L106
+        if duration > 0.011 {
+            return duration
+        } else {
+            return 0.1
+        }
     }
 }
 
