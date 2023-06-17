@@ -16,7 +16,7 @@ import Kingfisher
 @testable import KingfisherWebP
 
 class KingfisherWebPTests: XCTestCase {
-    let fileNames = ["cover.png", "kingfisher.jpg", "logo.png", "animation.gif"]
+    let fileNames = ["cover.png", "kingfisher.jpg", "logo.png", "animation.gif", "heart.png"]
     let animationFileNames = ["animation.gif", "heart.png"]
 
     override func setUp() {
@@ -147,12 +147,12 @@ class KingfisherWebPTests: XCTestCase {
         
         animationFileNames.forEach { fileName in
             let originalData = Data(fileName: fileName)
-            let originalImage = DefaultImageProcessor.default.process(item: .data(originalData), options: .init([]))!
+            let originalImage = KingfisherWrapper.animatedImage(data: originalData, options: .init(preloadAll: true))!
             
             let webpData = s.data(with: originalImage, original: nil)
             XCTAssertNotNil(webpData, fileName)
             
-            let imageFromWebPData = s.image(with: webpData!, options: .init([]))
+            let imageFromWebPData = s.image(with: webpData!, options: .init([.preloadAllAnimationData]))
             XCTAssertNotNil(imageFromWebPData, fileName)
 
             XCTAssertTrue(imageFromWebPData?.images?.count == originalImage.images?.count, fileName)
