@@ -53,41 +53,84 @@ extension KingfisherWrapper where Base: KFCrossPlatformImage {
 // MARK: - Create image from WebP data
 extension KingfisherWrapper where Base: KFCrossPlatformImage {
     public static func image(webpData: Data, scale: CGFloat, onlyFirstFrame: Bool) -> KFCrossPlatformImage? {
+        let options = ImageCreatingOptions(scale: scale, preloadAll: true, onlyFirstFrame: onlyFirstFrame)
+        return image(webpData: webpData, options: options)
+    }
+    
+    public static func image(webpData: Data, options: ImageCreatingOptions) -> KFCrossPlatformImage? {
         let frameCount = WebPImageFrameCountGetFromData(webpData as CFData)
         if (frameCount == 0) {
             return nil
         }
         
-        #if os(macOS)
-        guard let cgImage = WebPImageCreateWithData(webpData as CFData) else {
-            return nil
-        }
-        let image = KFCrossPlatformImage(cgImage: cgImage, size: .zero)
-        image.kf.imageFrameCount = Int(frameCount)
-        return image
-        #else
-        if (frameCount == 1 || onlyFirstFrame) {
+        if (frameCount == 1 || options.onlyFirstFrame) {
+            // MARK: Still image
             guard let cgImage = WebPImageCreateWithData(webpData as CFData) else {
                 return nil
             }
-            let image = KFCrossPlatformImage(cgImage: cgImage, scale: scale, orientation: .up)
+            #if os(macOS)
+            let image = KFCrossPlatformImage(cgImage: cgImage, size: .zero)
+            #else
+            let image = KFCrossPlatformImage(cgImage: cgImage, scale: options.scale, orientation: .up)
+            #endif
             image.kf.imageFrameCount = Int(frameCount)
             return image
         }
 
         // MARK: Animated images
-        guard let animationInfo = WebPAnimatedImageInfoCreateWithData(webpData as CFData) as Dictionary? else {
+        guard let frameSource = WebPFrameSource(data: webpData) else { return nil }
+        return KingfisherWrapper.animatedImage(source: frameSource, options: options)
+    }
+}
+
+class WebPFrameSource: ImageFrameSource {
+    init?(data: Data) {
+        guard let decoder = WebPDecoderCreateWithData(data as CFData) else {
             return nil
         }
-        guard let cgFrames = animationInfo[kWebPAnimatedImageFrames] as? [CGImage] else {
+        // We intentionally set data to nil to prevent Kingfisher from decoding this data a second time.
+        // https://github.com/onevcat/Kingfisher/blob/3f6992b5cd3143e83b02300ea59c400d4cf0747a/Sources/General/KingfisherManager.swift#L562
+        self.data = nil
+        self.decoder = decoder
+    }
+    
+    deinit {
+        WebPDecoderDestroy(decoder)
+    }
+    
+    let data: Data?
+    private let decoder: WebPDecoderRef
+    
+    var frameCount: Int {
+        get {
+            return Int(WebPDecoderGetFrameCount(decoder))
+        }
+    }
+    
+    func frame(at index: Int, maxSize: CGSize?) -> CGImage? {
+        guard let image = WebPDecoderCopyImageAtIndex(decoder, Int32(index)) else {
             return nil
         }
-        let uiFrames = cgFrames.map { KFCrossPlatformImage(cgImage: $0, scale: scale, orientation: .up) }
-        let duration = (animationInfo[kWebPAnimatedImageDuration] as? NSNumber).flatMap { $0.doubleValue as TimeInterval } ?? 0.1 * TimeInterval(frameCount)
-        let image = KFCrossPlatformImage.animatedImage(with: uiFrames, duration: duration)
-        image?.kf.imageFrameCount = Int(frameCount)
+        if let maxSize = maxSize, maxSize != .zero, CGFloat(image.width) > maxSize.width || CGFloat(image.height) > maxSize.height {
+            let scale = max(maxSize.width / CGFloat(image.width), maxSize.height / CGFloat(image.height))
+            let destWidth = Int(CGFloat(image.width) * scale)
+            let destHeight = Int(CGFloat(image.height) * scale)
+            let context = CGContext(data: nil,
+                                    width: destWidth,
+                                    height: destHeight,
+                                    bitsPerComponent: image.bitsPerComponent,
+                                    bytesPerRow: 0,
+                                    space: image.colorSpace ?? CGColorSpaceCreateDeviceRGB(),
+                                    bitmapInfo: image.bitmapInfo.rawValue)
+            context?.interpolationQuality = .high
+            context?.draw(image, in: CGRect(x: 0, y: 0, width: destWidth, height: destHeight))
+            return context?.makeImage() ?? image
+        }
         return image
-        #endif
+    }
+    
+    func duration(at index: Int) -> TimeInterval {
+        return TimeInterval(WebPDecoderGetDurationAtIndex(decoder, Int32(index)))
     }
 }
 

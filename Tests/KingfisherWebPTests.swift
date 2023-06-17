@@ -9,14 +9,15 @@ import AppKit
 #else
 import UIKit
 #endif
+import ImageIO
 
 import XCTest
 import Kingfisher
 @testable import KingfisherWebP
 
 class KingfisherWebPTests: XCTestCase {
-    let fileNames = ["cover.png", "kingfisher.jpg", "logo.png", "animation.gif"]
-    let animationFileNames = ["animation.gif"]
+    let fileNames = ["cover.png", "kingfisher.jpg", "logo.png", "animation.gif", "heart.png"]
+    let animationFileNames = ["animation.gif", "heart.png"]
 
     override func setUp() {
         super.setUp()
@@ -53,10 +54,9 @@ class KingfisherWebPTests: XCTestCase {
             XCTAssertNotNil(decodedWebP, fileName)
             
             let originalData = Data(fileName: fileName)
-            let originalImage = DefaultImageProcessor.default.process(item: .data(originalData), options: .init([.onlyLoadFirstFrame]))
+            let originalImage = KingfisherWrapper.animatedImage(data: originalData, options: .init())
             
             XCTAssertEqual(decodedWebP?.kf.imageFrameCount, originalImage?.kf.imageFrameCount)
-            
             XCTAssertTrue(decodedWebP!.renderEqual(to: originalImage!), "The first frame should be equal")
         }
     }
@@ -66,11 +66,11 @@ class KingfisherWebPTests: XCTestCase {
         
         animationFileNames.forEach { fileName in
             let webpData = Data(fileName: (fileName as NSString).deletingPathExtension, extension: "webp")
-            let decodedWebP = p.process(item: .data(webpData), options: .init([]))
+            let decodedWebP = p.process(item: .data(webpData), options: .init([.preloadAllAnimationData]))
             XCTAssertNotNil(decodedWebP, fileName)
             
             let originalData = Data(fileName: fileName)
-            let originalImage = DefaultImageProcessor.default.process(item: .data(originalData), options: .init([.preloadAllAnimationData]))
+            let originalImage = KingfisherWrapper.animatedImage(data: originalData, options: .init(preloadAll: true))
             
             XCTAssertTrue(decodedWebP?.images?.count == originalImage?.images?.count, fileName)
             XCTAssertEqual(decodedWebP?.kf.imageFrameCount, originalImage?.kf.imageFrameCount)
@@ -78,6 +78,31 @@ class KingfisherWebPTests: XCTestCase {
             decodedWebP?.images?.enumerated().forEach { (index, frame) in
                 let originalFrame = originalImage!.images![index]
                 XCTAssertTrue(frame.renderEqual(to: originalFrame), "Frame \(index) of \(fileName) should be equal")
+            }
+        }
+    }
+    
+    func testAccumulativeFrameDecoding() {
+        let p = WebPProcessor.default
+        
+        animationFileNames.forEach { fileName in
+            let webpData = Data(fileName: (fileName as NSString).deletingPathExtension, extension: "webp")
+            let decodedWebP = p.process(item: .data(webpData), options: .init([]))!
+            XCTAssertNil(decodedWebP.images, "The images array should be nil")
+            let webpImageSource = decodedWebP.kf.frameSource!
+            
+            let originalData = Data(fileName: fileName)
+            let originImageSource = CGImageSourceCreateWithData(originalData as CFData, nil)!
+            
+            XCTAssertEqual(webpImageSource.frameCount, CGImageSourceGetCount(originImageSource), "Frame count should be equal")
+            for index in 0..<webpImageSource.frameCount {
+                let webpDuration = webpImageSource.duration(at: index)
+                let originalDuration = originImageSource.duration(at: index)
+                XCTAssertEqual(webpDuration, originalDuration, "Duration of frame \(index) should be equal")
+                
+                let webpFrame = UIImage(cgImage: webpImageSource.frame(at: index)!)
+                let originalFrame = UIImage(cgImage: CGImageSourceCreateImageAtIndex(originImageSource, index, nil)!)
+                XCTAssertTrue(webpFrame.renderEqual(to: originalFrame), "Frame \(index) of \(fileName) should be equal")
             }
         }
     }
@@ -122,12 +147,12 @@ class KingfisherWebPTests: XCTestCase {
         
         animationFileNames.forEach { fileName in
             let originalData = Data(fileName: fileName)
-            let originalImage = DefaultImageProcessor.default.process(item: .data(originalData), options: .init([]))!
+            let originalImage = KingfisherWrapper.animatedImage(data: originalData, options: .init(preloadAll: true))!
             
             let webpData = s.data(with: originalImage, original: nil)
             XCTAssertNotNil(webpData, fileName)
             
-            let imageFromWebPData = s.image(with: webpData!, options: .init([]))
+            let imageFromWebPData = s.image(with: webpData!, options: .init([.preloadAllAnimationData]))
             XCTAssertNotNil(imageFromWebPData, fileName)
 
             XCTAssertTrue(imageFromWebPData?.images?.count == originalImage.images?.count, fileName)
@@ -172,6 +197,23 @@ extension Data {
     init(fileName: String, extension: String? = nil) {
         let url = Bundle(for: KingfisherWebPTests.self).url(forResource: fileName, withExtension: `extension`)!
         try! self.init(contentsOf: url)
+    }
+}
+
+extension CGImageSource {
+    func duration(at index: Int) -> TimeInterval {
+        let properties = CGImageSourceCopyPropertiesAtIndex(self, index, nil) as! [CFString: Any]
+        let result: TimeInterval
+        if properties[kCGImagePropertyGIFDictionary] != nil {
+            let subprop = properties[kCGImagePropertyGIFDictionary] as! [CFString: Any]
+            result = subprop[kCGImagePropertyGIFUnclampedDelayTime] as! TimeInterval
+        } else if properties[kCGImagePropertyPNGDictionary] != nil {
+            let subprop = properties[kCGImagePropertyPNGDictionary] as! [CFString: Any]
+            result = subprop[kCGImagePropertyAPNGUnclampedDelayTime] as! TimeInterval
+        } else {
+            result = 0.1
+        }
+        return round(result * 1000) / 1000
     }
 }
 

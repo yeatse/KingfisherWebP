@@ -23,7 +23,8 @@ public struct WebPProcessor: ImageProcessor {
             return image
         case .data(let data):
             if data.isWebPFormat {
-                return KingfisherWrapper<KFCrossPlatformImage>.image(webpData: data, scale: options.scaleFactor, onlyFirstFrame: options.onlyLoadFirstFrame)
+                let creatingOptions = ImageCreatingOptions(scale: options.scaleFactor, preloadAll: options.preloadAllAnimationData, onlyFirstFrame: options.onlyLoadFirstFrame)
+                return KingfisherWrapper<KFCrossPlatformImage>.image(webpData: data, options: creatingOptions)
             } else {
                 return DefaultImageProcessor.default.process(item: item, options: options)
             }
