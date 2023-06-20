@@ -88,9 +88,7 @@ class WebPFrameSource: ImageFrameSource {
         guard let decoder = WebPDecoderCreateWithData(data as CFData) else {
             return nil
         }
-        // We intentionally set data to nil to prevent Kingfisher from decoding this data a second time.
-        // https://github.com/onevcat/Kingfisher/blob/3f6992b5cd3143e83b02300ea59c400d4cf0747a/Sources/General/KingfisherManager.swift#L562
-        self.data = nil
+        self.data = data
         self.decoder = decoder
         // http://www.russbishop.net/the-law
         self.decoderLock = UnsafeMutablePointer<os_unfair_lock>.allocate(capacity: 1)
