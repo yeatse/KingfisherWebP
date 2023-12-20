@@ -27,12 +27,6 @@
 
 #pragma mark - Helper Functions
 
-static void WebPFreeInfoReleaseDataCallback(void *info, const void *data, size_t size) {
-    if (info) {
-        free(info);
-    }
-}
-
 static CGColorSpaceRef WebPColorSpaceForDeviceRGB(void) {
     static CGColorSpaceRef colorSpace;
     static dispatch_once_t onceToken;
@@ -268,18 +262,16 @@ CGImageRef WebPImageCreateWithData(CFDataRef webpData) {
     }
     
     const size_t bufSize = anim_info.canvas_width * 4 * anim_info.canvas_height;
-    void *bufCopy = malloc(bufSize);
-    if (!bufCopy) {
-        WebPAnimDecoderDelete(dec);
+    CFDataRef imageData = CFDataCreate(kCFAllocatorDefault, buf, bufSize);
+    WebPAnimDecoderDelete(dec);
+    if (!imageData) {
         return NULL;
     }
     
-    memcpy(bufCopy, buf, bufSize);
-    WebPAnimDecoderDelete(dec);
-        
-    CGDataProviderRef provider = CGDataProviderCreateWithData(bufCopy, bufCopy, bufSize, WebPFreeInfoReleaseDataCallback);
+    CGDataProviderRef provider = CGDataProviderCreateWithCFData(imageData);
     CGImageRef image = CGImageCreate(anim_info.canvas_width, anim_info.canvas_height, 8, 32, anim_info.canvas_width * 4, WebPColorSpaceForDeviceRGB(), kCGImageAlphaPremultipliedLast | kCGBitmapByteOrderDefault, provider, NULL, false, kCGRenderingIntentDefault);
     CGDataProviderRelease(provider);
+    CFRelease(imageData);
     
     return image;
 }
@@ -378,17 +370,16 @@ CFDictionaryRef WebPAnimatedImageInfoCreateWithData(CFDataRef webpData) {
         }
         
         const size_t bufSize = anim_info.canvas_width * 4 * anim_info.canvas_height;
-        void *bufCopy = malloc(bufSize);
-        if (!bufCopy) {
+        CFDataRef imageData = CFDataCreate(kCFAllocatorDefault, buf, bufSize);
+        if (!imageData) {
             break;
         }
-        memcpy(bufCopy, buf, bufSize);
-        
-        CGDataProviderRef provider = CGDataProviderCreateWithData(bufCopy, bufCopy, bufSize, WebPFreeInfoReleaseDataCallback);
+        CGDataProviderRef provider = CGDataProviderCreateWithCFData(imageData);
         CGImageRef image = CGImageCreate(anim_info.canvas_width, anim_info.canvas_height, 8, 32, anim_info.canvas_width * 4, WebPColorSpaceForDeviceRGB(), kCGImageAlphaPremultipliedLast | kCGBitmapByteOrderDefault, provider, NULL, false, kCGRenderingIntentDefault);
         CFArrayAppendValue(imageFrames, image);
         CGImageRelease(image);
         CGDataProviderRelease(provider);
+        CFRelease(imageData);
     }
     
     // add last frame's duration
@@ -556,8 +547,8 @@ CGImageRef WebPDecoderCopyImageAtIndex(WebPDecoderRef decoder, int index) {
         return NULL;
     }
     
-    void *buffer = NULL;
     const size_t bufSize = info.canvas_width * info.canvas_height * 4;
+    CFDataRef imageData = NULL;
     
     // decode directly if target index is key frame
     if (index > 0 && index != decoder->currentIndex + 1) {
@@ -574,10 +565,11 @@ CGImageRef WebPDecoderCopyImageAtIndex(WebPDecoderRef decoder, int index) {
         int is_key_frame = IsKeyFrame(&curr, &prev, info.canvas_width, info.canvas_height);
         if (is_key_frame) {
             int width, height;
-            buffer = WebPDecodeRGBA(curr.fragment.bytes, curr.fragment.size, &width, &height);
+            uint8_t *buffer = WebPDecodeRGBA(curr.fragment.bytes, curr.fragment.size, &width, &height);
             if (width != info.canvas_width || height != info.canvas_height) {
                 free(buffer); // fallback
-                buffer = NULL;
+            } else {
+                imageData = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, buffer, bufSize, kCFAllocatorDefault);
             }
         }
         WebPDemuxReleaseIterator(&prev);
@@ -585,7 +577,7 @@ CGImageRef WebPDecoderCopyImageAtIndex(WebPDecoderRef decoder, int index) {
     }
     
 anim_decoder:
-    if (!buffer) {
+    if (!imageData) {
         // In animated webp images, a single frame may blend with the previous one. To ensure that we get
         // the correct image, we decode not only the current frame but also all of its predecessors. While
         // this approach may be slow for random index access, it is performant in Kingfisher scenarios as it
@@ -605,14 +597,14 @@ anim_decoder:
             }
             decoder->currentIndex ++;
         }
-        buffer = malloc(bufSize);
-        if (!buffer) {
-            return NULL;
-        }
-        memcpy(buffer, buf, bufSize);
+        imageData = CFDataCreate(kCFAllocatorDefault, buf, bufSize);
     }
-    CGDataProviderRef provider = CGDataProviderCreateWithData(buffer, buffer, bufSize, WebPFreeInfoReleaseDataCallback);
+    if (!imageData) {
+        return NULL;
+    }
+    CGDataProviderRef provider = CGDataProviderCreateWithCFData(imageData);
     CGImageRef image = CGImageCreate(info.canvas_width, info.canvas_height, 8, 32, info.canvas_width * 4, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaPremultipliedLast | kCGBitmapByteOrderDefault, provider, NULL, false, kCGRenderingIntentDefault);
     CGDataProviderRelease(provider);
+    CFRelease(imageData);
     return image;
 }
