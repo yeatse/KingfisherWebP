@@ -317,6 +317,7 @@ fail:
 const CFStringRef kWebPAnimatedImageDuration = CFSTR("kWebPAnimatedImageDuration");
 const CFStringRef kWebPAnimatedImageLoopCount = CFSTR("kWebPAnimatedImageLoopCount");
 const CFStringRef kWebPAnimatedImageFrames = CFSTR("kWebPAnimatedImageFrames");
+const CFStringRef kWebPAnimatedImageFrameDurations = CFSTR("kWebPAnimatedImageFrameDurations");
 
 uint32_t WebPImageFrameCountGetFromData(CFDataRef webpData) {
     WebPData webp_data;
@@ -412,8 +413,13 @@ CFDataRef WebPDataCreateWithAnimatedImageInfo(CFDictionaryRef imageInfo, bool is
     CFNumberRef loopCount = CFDictionaryGetValue(imageInfo, kWebPAnimatedImageLoopCount);
     CFNumberRef durationRef = CFDictionaryGetValue(imageInfo, kWebPAnimatedImageDuration);
     CFArrayRef imageFrames = CFDictionaryGetValue(imageInfo, kWebPAnimatedImageFrames);
+    CFArrayRef frameDurations = CFDictionaryGetValue(imageInfo, kWebPAnimatedImageFrameDurations);
     
     if (!imageFrames || CFArrayGetCount(imageFrames) < 1) {
+        return NULL;
+    }
+    
+    if (frameDurations && CFArrayGetCount(frameDurations) != CFArrayGetCount(imageFrames)) {
         return NULL;
     }
     
@@ -429,13 +435,14 @@ CFDataRef WebPDataCreateWithAnimatedImageInfo(CFDictionaryRef imageInfo, bool is
         return NULL;
     }
     
-    int frameDurationInMilliSec = 100;
-    if (durationRef) {
+    int defaultDurationInMilliSec = 100;
+    if (durationRef && !frameDurations) {
         double totalDurationInSec;
         CFNumberGetValue(durationRef, kCFNumberDoubleType, &totalDurationInSec);
-        frameDurationInMilliSec = (int)(totalDurationInSec * 1000 / CFArrayGetCount(imageFrames));
+        defaultDurationInMilliSec = (int)(totalDurationInSec * 1000 / CFArrayGetCount(imageFrames));
     }
     
+    int timestamp = 0;
     for (CFIndex i = 0; i < CFArrayGetCount(imageFrames); i ++) {
         WebPPicture frame;
         WebPPictureInit(&frame);
@@ -447,11 +454,19 @@ CFDataRef WebPDataCreateWithAnimatedImageInfo(CFDictionaryRef imageInfo, bool is
             } else {
                 WebPConfigLosslessPreset(&config, 0);
             }
-            WebPAnimEncoderAdd(enc, &frame, (int)(frameDurationInMilliSec * i), &config);
+            WebPAnimEncoderAdd(enc, &frame, timestamp, &config);
+            if (frameDurations) {
+                CFNumberRef frameDuration = CFArrayGetValueAtIndex(frameDurations, i);
+                double durationInSec = 0.1;
+                CFNumberGetValue(frameDuration, kCFNumberDoubleType, &durationInSec);
+                timestamp += (int)(durationInSec * 1000);
+            } else {
+                timestamp += defaultDurationInMilliSec;
+            }
         }
         WebPPictureFree(&frame);
     }
-    WebPAnimEncoderAdd(enc, NULL, (int)(frameDurationInMilliSec * CFArrayGetCount(imageFrames)), NULL);
+    WebPAnimEncoderAdd(enc, NULL, timestamp, NULL);
     
     WebPData webp_data;
     WebPDataInit(&webp_data);
