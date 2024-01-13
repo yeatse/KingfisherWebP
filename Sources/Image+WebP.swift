@@ -103,6 +103,7 @@ class WebPFrameSource: ImageFrameSource {
     let data: Data?
     private let decoder: WebPDecoderRef
     private var decoderLock: UnsafeMutablePointer<os_unfair_lock>
+    private var frameCache = NSCache<NSNumber, CGImage>()
     
     var frameCount: Int {
         get {
@@ -115,9 +116,14 @@ class WebPFrameSource: ImageFrameSource {
         defer {
             os_unfair_lock_unlock(decoderLock)
         }
-        guard let image = WebPDecoderCopyImageAtIndex(decoder, Int32(index)) else {
-            return nil
+        var image = frameCache.object(forKey: index as NSNumber)
+        if image == nil {
+            image = WebPDecoderCopyImageAtIndex(decoder, Int32(index))
+            if image != nil {
+                frameCache.setObject(image!, forKey: index as NSNumber)
+            }
         }
+        guard let image = image else { return nil }
         if let maxSize = maxSize, maxSize != .zero, CGFloat(image.width) > maxSize.width || CGFloat(image.height) > maxSize.height {
             let scale = min(maxSize.width / CGFloat(image.width), maxSize.height / CGFloat(image.height))
             let destWidth = Int(CGFloat(image.width) * scale)
