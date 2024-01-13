@@ -192,8 +192,13 @@ class KingfisherWebPTests: XCTestCase {
             XCTAssertEqual(originalFrameSource.frameCount, encodedFrameSource.frameCount)
             
             (0..<originalFrameSource.frameCount).forEach { index in
+                #if os(macOS)
                 let frame1 = KFCrossPlatformImage(cgImage: originalFrameSource.frame(at: index)!, size: .zero)
                 let frame2 = KFCrossPlatformImage(cgImage: encodedFrameSource.frame(at: index)!, size: .zero)
+                #else
+                let frame1 = KFCrossPlatformImage(cgImage: originalFrameSource.frame(at: index)!)
+                let frame2 = KFCrossPlatformImage(cgImage: encodedFrameSource.frame(at: index)!)
+                #endif
                 XCTAssertTrue(frame1.renderEqual(to: frame2), "Frame \(index) of \(fileName) should be equal")
                 
                 let duration1 = originalFrameSource.duration(at: index)
