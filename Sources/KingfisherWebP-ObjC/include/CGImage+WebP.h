@@ -19,6 +19,7 @@ CFDataRef __nullable WebPDataCreateWithImage(CGImageRef image, bool isLossy, flo
 CG_EXTERN const CFStringRef kWebPAnimatedImageDuration;
 CG_EXTERN const CFStringRef kWebPAnimatedImageLoopCount;
 CG_EXTERN const CFStringRef kWebPAnimatedImageFrames; // CFArrayRef of CGImageRef
+CG_EXTERN const CFStringRef kWebPAnimatedImageFrameDurations; // CFArrayRef of CFNumberRef
 
 uint32_t WebPImageFrameCountGetFromData(CFDataRef webpData);
 CFDictionaryRef __nullable WebPAnimatedImageInfoCreateWithData(CFDataRef webpData);

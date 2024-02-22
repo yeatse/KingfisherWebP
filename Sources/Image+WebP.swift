@@ -14,6 +14,10 @@ import Foundation
 import KingfisherWebP_ObjC
 #endif
 
+#if canImport(AppKit)
+import AppKit
+#endif
+
 // MARK: - Image Representation
 extension KingfisherWrapper where Base: KFCrossPlatformImage {
     /// isLossy  (0=lossy , 1=lossless (default)).
@@ -37,16 +41,27 @@ extension KingfisherWrapper where Base: KFCrossPlatformImage {
     /// isLossy  (0=lossy , 1=lossless (default)).
     /// Note that the default values are isLossy= false and quality=75.0f
     private func animatedWebPRepresentation(isLossy: Bool = false, quality: Float = 75.0) -> Data? {
-        #if os(macOS)
-        return nil
-        #else
-        guard let images = base.images?.compactMap({ $0.cgImage }) else {
+        let imageInfo: [CFString: Any]
+        if let frameSource = frameSource {
+            let frameCount = frameSource.frameCount
+            imageInfo = [
+                kWebPAnimatedImageFrames: (0..<frameCount).map({ frameSource.frame(at: $0) }),
+                kWebPAnimatedImageFrameDurations: (0..<frameCount).map({ frameSource.duration(at: $0) }),
+            ]
+        } else {
+#if os(macOS)
             return nil
+#else
+            guard let images = base.images?.compactMap({ $0.cgImage }) else {
+                return nil
+            }
+            imageInfo = [
+                kWebPAnimatedImageFrames: images,
+                kWebPAnimatedImageDuration: base.duration
+            ]
+#endif
         }
-        let imageInfo = [ kWebPAnimatedImageFrames: images,
-                          kWebPAnimatedImageDuration: NSNumber(value: base.duration) ] as [CFString : Any]
         return WebPDataCreateWithAnimatedImageInfo(imageInfo as CFDictionary, isLossy, quality) as Data?
-        #endif
     }
 }
 
@@ -103,6 +118,7 @@ class WebPFrameSource: ImageFrameSource {
     let data: Data?
     private let decoder: WebPDecoderRef
     private var decoderLock: UnsafeMutablePointer<os_unfair_lock>
+    private var frameCache = NSCache<NSNumber, CGImage>()
     
     var frameCount: Int {
         get {
@@ -115,9 +131,14 @@ class WebPFrameSource: ImageFrameSource {
         defer {
             os_unfair_lock_unlock(decoderLock)
         }
-        guard let image = WebPDecoderCopyImageAtIndex(decoder, Int32(index)) else {
-            return nil
+        var image = frameCache.object(forKey: index as NSNumber)
+        if image == nil {
+            image = WebPDecoderCopyImageAtIndex(decoder, Int32(index))
+            if image != nil {
+                frameCache.setObject(image!, forKey: index as NSNumber)
+            }
         }
+        guard let image = image else { return nil }
         if let maxSize = maxSize, maxSize != .zero, CGFloat(image.width) > maxSize.width || CGFloat(image.height) > maxSize.height {
             let scale = min(maxSize.width / CGFloat(image.width), maxSize.height / CGFloat(image.height))
             let destWidth = Int(CGFloat(image.width) * scale)

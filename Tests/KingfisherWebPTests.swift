@@ -132,7 +132,8 @@ class KingfisherWebPTests: XCTestCase {
 
     #if os(macOS)
     func testMultipleFrameEncoding() {
-        let s = WebPSerializer.default
+        var s = WebPSerializer.default
+        s.originalDataUsed = false
         
         animationFileNames.forEach { fileName in
             let originalData = Data(fileName: fileName)
@@ -149,7 +150,8 @@ class KingfisherWebPTests: XCTestCase {
     }
     #else
     func testMultipleFrameEncoding() {
-        let s = WebPSerializer.default
+        var s = WebPSerializer.default
+        s.originalDataUsed = false
         
         animationFileNames.forEach { fileName in
             let originalData = Data(fileName: fileName)
@@ -170,6 +172,64 @@ class KingfisherWebPTests: XCTestCase {
         }
     }
     #endif
+    
+    func testVariableFrameEncoding() {
+        var s = WebPSerializer.default
+        s.originalDataUsed = false
+        
+        animationFileNames.forEach { fileName in
+            let originalData = Data(fileName: fileName)
+            let originalImage = KingfisherWrapper.animatedImage(data: originalData, options: .init())!
+            
+            let webpData = s.data(with: originalImage, original: nil)
+            XCTAssertNotNil(webpData, fileName)
+            
+            let imageFromWebPData = s.image(with: webpData!, options: .init(nil))
+            XCTAssertNotNil(imageFromWebPData, fileName)
+            
+            let originalFrameSource = originalImage.kf.frameSource!
+            let encodedFrameSource = imageFromWebPData!.kf.frameSource!
+            XCTAssertEqual(originalFrameSource.frameCount, encodedFrameSource.frameCount)
+            
+            (0..<originalFrameSource.frameCount).forEach { index in
+                #if os(macOS)
+                let frame1 = KFCrossPlatformImage(cgImage: originalFrameSource.frame(at: index)!, size: .zero)
+                let frame2 = KFCrossPlatformImage(cgImage: encodedFrameSource.frame(at: index)!, size: .zero)
+                #else
+                let frame1 = KFCrossPlatformImage(cgImage: originalFrameSource.frame(at: index)!)
+                let frame2 = KFCrossPlatformImage(cgImage: encodedFrameSource.frame(at: index)!)
+                #endif
+                XCTAssertTrue(frame1.renderEqual(to: frame2), "Frame \(index) of \(fileName) should be equal")
+                
+                let duration1 = originalFrameSource.duration(at: index)
+                let duration2 = encodedFrameSource.duration(at: index)
+                XCTAssertEqual(duration1, duration2, "Duration in frame \(index) of \(fileName) should be equal")
+            }
+        }
+    }
+    
+    func testOriginalDataIsUsed() {
+        let s = WebPSerializer.default
+        XCTAssertTrue(s.originalDataUsed)
+        
+        let randomData = Data((0..<10).map { _ in UInt8.random(in: 0...255) })
+        let encoded = s.data(with: KFCrossPlatformImage(), original: randomData)
+        XCTAssertEqual(encoded, randomData, "Original data should be used")
+        
+        struct RandomFrameSource: ImageFrameSource {
+            let data: Data? = Data((0..<10).map { _ in UInt8.random(in: 0...255) })
+            let frameCount: Int = 10
+            func duration(at index: Int) -> TimeInterval { return 0 }
+            func frame(at index: Int, maxSize: CGSize?) -> CGImage? {
+                KFCrossPlatformImage(data: .init(fileName: "cover.png"))?.kfCGImage
+            }
+        }
+        
+        let source = RandomFrameSource()
+        let image = KingfisherWrapper.animatedImage(source: source, options: .init())!
+        let encoded2 = s.data(with: image, original: nil)
+        XCTAssertEqual(encoded2, source.data, "Original data should be used")
+    }
     
     func testEncodingPerformance() {
         let s = WebPSerializer.default

@@ -25,14 +25,19 @@ public struct WebPSerializer: CacheSerializer {
     private init() {}
 
     public func data(with image: KFCrossPlatformImage, original: Data?) -> Data? {
-        if let original = original, originalDataUsed {
-            return original
-        } else if let original = original, !original.isWebPFormat {
-            return DefaultCacheSerializer.default.data(with: image, original: original)
-        } else {
-            let qualityInWebp = min(max(0, compressionQuality), 1) * 100
-            return image.kf.normalized.kf.webpRepresentation(isLossy: isLossy, quality: Float(qualityInWebp))
+        if originalDataUsed {
+            if let original = original {
+                return original
+            }
+            if let frameData = image.kf.frameSource?.data {
+                return frameData
+            }
         }
+        if let original = original, !original.isWebPFormat {
+            return DefaultCacheSerializer.default.data(with: image, original: original)
+        }
+        let qualityInWebp = min(max(0, compressionQuality), 1) * 100
+        return image.kf.normalized.kf.webpRepresentation(isLossy: isLossy, quality: Float(qualityInWebp))
     }
 
     public func image(with data: Data, options: KingfisherParsedOptionsInfo) -> KFCrossPlatformImage? {
