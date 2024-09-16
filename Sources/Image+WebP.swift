@@ -175,16 +175,12 @@ extension Data {
             return false
         }
 
-        let endIndex = index(startIndex, offsetBy: 12)
-        let testData = subdata(in: startIndex..<endIndex)
-        guard let testString = String(data: testData, encoding: .ascii) else {
-            return false
-        }
+        let riffHeader = subdata(in: startIndex..<index(startIndex, offsetBy: 4))
+        let webpHeader = subdata(in: index(startIndex, offsetBy: 8)..<index(startIndex, offsetBy: 12))
 
-        if testString.hasPrefix("RIFF") && testString.hasSuffix("WEBP") {
-            return true
-        } else {
-            return false
-        }
+        let riffString = String(data: riffHeader, encoding: .ascii)
+        let webpString = String(data: webpHeader, encoding: .ascii)
+
+        return riffString == "RIFF" && webpString == "WEBP"
     }
 }
