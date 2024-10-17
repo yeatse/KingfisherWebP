@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "KingfisherWebP",
-    platforms: [.iOS(.v12), .tvOS(.v12), .watchOS(.v5), .macOS(.v10_14)], 
+    platforms: [.iOS(.v13), .tvOS(.v13), .watchOS(.v6), .macOS(.v10_15)], 
     products: [
         .library(name: "KingfisherWebP", targets: ["KingfisherWebP"])
     ],
