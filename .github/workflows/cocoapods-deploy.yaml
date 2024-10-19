@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - '*'
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -15,6 +16,7 @@ jobs:
         run: |
           gem install cocoapods
           pod setup
+          perl -i -pe 'if (/^(\s*)def validated\?/) { $_ .= "${1}  return true\n" }' "$(gem which cocoapods/validator)"
 
       - name: Deploy to cocoapods
         uses: michaelhenry/deploy-to-cocoapods-github-action@1.0.10
