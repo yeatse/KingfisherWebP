@@ -10,16 +10,18 @@ jobs:
   deploy:
     runs-on: macOS-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      - name: Install cocoapods
+      - name: Deploy to cocoapods
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
         run: |
+          export LIB_VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
           gem install cocoapods
           pod setup
           perl -i -pe 'if (/^(\s*)def validated\?/) { $_ .= "${1}  return true\n" }' "$(gem which cocoapods/validator)"
-
-      - name: Deploy to cocoapods
-        uses: michaelhenry/deploy-to-cocoapods-github-action@1.0.10
-        env:
-          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
-      
+          pod lib lint --allow-warnings
+          pod trunk push --allow-warnings
+        shell: bash
