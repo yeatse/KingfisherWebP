@@ -7,7 +7,7 @@
 
 # Description
 
-KingfisherWebP is an extension of the popular library [Kingfisher](https://github.com/onevcat/Kingfisher), providing an ImageProcessor and CacheSerializer for you to conveniently handle the [WebP format](https://developers.google.com/speed/webp/).
+KingfisherWebP is an extension of the popular library [Kingfisher](https://github.com/onevcat/Kingfisher), providing an ImageProcessor and CacheSerializer for you to conveniently handle the [WebP format](https://developers.google.com/speed/webp/). Animated WebP is also supported!
 
 The library works seamlessly with `Kingfisher`. To display the webp images from network, simply add `WebPProcessor` and `WebPSerializer` to your `KingfisherOptionsInfo`:
 
