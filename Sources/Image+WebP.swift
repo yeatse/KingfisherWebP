@@ -191,7 +191,9 @@ class WebPFrameSource: ImageFrameSource {
         }
         CFDataSetLength(destData, destDataSize)
 
-        let destBytes = CFDataGetMutableBytePtr(destData)!
+        guard let destBytes = CFDataGetMutableBytePtr(destData) else {
+            return nil
+        }
         var destBuffer = vImage_Buffer(
             data: destBytes,
             height: vImagePixelCount(targetHeight),
