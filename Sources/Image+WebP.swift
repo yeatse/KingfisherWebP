@@ -150,10 +150,7 @@ class WebPFrameSource: ImageFrameSource {
         return image
     }
 
-    private func scaleImageUsingVImage(_ image: CGImage, maxSize: CGSize) -> CGImage? {
-        let sourceWidth = image.width
-        let sourceHeight = image.height
-
+    private func calculateTargetSize(sourceWidth: Int, sourceHeight: Int, maxSize: CGSize) -> (width: Int, height: Int)? {
         // Calculate target size preserving aspect ratio
         let widthRatio = maxSize.width / CGFloat(sourceWidth)
         let heightRatio = maxSize.height / CGFloat(sourceHeight)
@@ -163,6 +160,17 @@ class WebPFrameSource: ImageFrameSource {
         let targetHeight = Int(CGFloat(sourceHeight) * scale)
 
         guard targetWidth > 0, targetHeight > 0 else { return nil }
+        return (targetWidth, targetHeight)
+    }
+
+    private func scaleImageUsingVImage(_ image: CGImage, maxSize: CGSize) -> CGImage? {
+        let sourceWidth = image.width
+        let sourceHeight = image.height
+
+        guard let targetSize = calculateTargetSize(sourceWidth: sourceWidth, sourceHeight: sourceHeight, maxSize: maxSize) else {
+            return nil
+        }
+        let (targetWidth, targetHeight) = targetSize
 
         // Get source image properties
         guard let colorSpace = image.colorSpace else { return nil }
@@ -234,15 +242,10 @@ class WebPFrameSource: ImageFrameSource {
         let sourceWidth = image.width
         let sourceHeight = image.height
 
-        // Calculate target size preserving aspect ratio
-        let widthRatio = maxSize.width / CGFloat(sourceWidth)
-        let heightRatio = maxSize.height / CGFloat(sourceHeight)
-        let scale = min(widthRatio, heightRatio)
-
-        let targetWidth = Int(CGFloat(sourceWidth) * scale)
-        let targetHeight = Int(CGFloat(sourceHeight) * scale)
-
-        guard targetWidth > 0, targetHeight > 0 else { return nil }
+        guard let targetSize = calculateTargetSize(sourceWidth: sourceWidth, sourceHeight: sourceHeight, maxSize: maxSize) else {
+            return nil
+        }
+        let (targetWidth, targetHeight) = targetSize
 
         // Get image properties
         guard let colorSpace = image.colorSpace else { return nil }
