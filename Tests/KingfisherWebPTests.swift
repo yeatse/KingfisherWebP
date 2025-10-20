@@ -256,6 +256,60 @@ class KingfisherWebPTests: XCTestCase {
             }
         }
     }
+
+    func testAnimatedWebPDecodingWithScaling() {
+        // Test that avatar.webp (400x400) decoded and scaled to 100x100
+        // matches avatar_scaled.webp (100x100) frame by frame
+        let webpData = Data(fileName: "avatar", extension: "webp")
+        let webpScaledData = Data(fileName: "avatar_scaled", extension: "webp")
+
+        // Create WebPFrameSource for original (to be scaled)
+        guard let webpFrameSource = WebPFrameSource(data: webpData) else {
+            XCTFail("Failed to create WebPFrameSource for avatar.webp")
+            return
+        }
+
+        // Create WebPFrameSource for reference scaled version
+        guard let webpScaledFrameSource = WebPFrameSource(data: webpScaledData) else {
+            XCTFail("Failed to create WebPFrameSource for avatar_scaled.webp")
+            return
+        }
+
+        // Verify frame counts match
+        XCTAssertEqual(webpFrameSource.frameCount, webpScaledFrameSource.frameCount, "Frame count should match")
+
+        let maxSize = CGSize(width: 100, height: 100)
+
+        // Compare each scaled frame with corresponding reference frame
+        for index in 0..<webpFrameSource.frameCount {
+            guard let scaledFrame = webpFrameSource.frame(at: index, maxSize: maxSize) else {
+                XCTFail("Failed to decode and scale avatar.webp frame \(index)")
+                continue
+            }
+
+            guard let referenceFrame = webpScaledFrameSource.frame(at: index, maxSize: nil) else {
+                XCTFail("Failed to decode avatar_scaled.webp frame \(index)")
+                continue
+            }
+
+            // Verify dimensions match
+            XCTAssertEqual(scaledFrame.width, referenceFrame.width, "Frame \(index) width should match")
+            XCTAssertEqual(scaledFrame.height, referenceFrame.height, "Frame \(index) height should match")
+
+            #if os(macOS)
+            let scaledImage = KFCrossPlatformImage(cgImage: scaledFrame, size: .zero)
+            let referenceImage = KFCrossPlatformImage(cgImage: referenceFrame, size: .zero)
+            #else
+            let scaledImage = KFCrossPlatformImage(cgImage: scaledFrame)
+            let referenceImage = KFCrossPlatformImage(cgImage: referenceFrame)
+            #endif
+
+            // Frames should match exactly since avatar_scaled.webp was created from the same scaling process
+            // We use a minimal tolerance to account for lossy WebP encoding
+            XCTAssertTrue(scaledImage.renderEqual(to: referenceImage, withinTolerance: 3, tolerancePercent: 0.001),
+                         "Frame \(index) should match avatar_scaled.webp (with minimal tolerance for WebP encoding)")
+        }
+    }
 }
 
 // MARK: - Helper
