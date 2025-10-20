@@ -9,6 +9,7 @@
 import Kingfisher
 import CoreGraphics
 import Foundation
+import Accelerate
 
 #if SWIFT_PACKAGE
 import KingfisherWebP_ObjC
@@ -139,24 +140,136 @@ class WebPFrameSource: ImageFrameSource {
             }
         }
         guard let image = image else { return nil }
-        if let maxSize = maxSize, maxSize != .zero, CGFloat(image.width) > maxSize.width || CGFloat(image.height) > maxSize.height {
-            let scale = min(maxSize.width / CGFloat(image.width), maxSize.height / CGFloat(image.height))
-            let destWidth = Int(CGFloat(image.width) * scale)
-            let destHeight = Int(CGFloat(image.height) * scale)
-            let context = CGContext(data: nil,
-                                    width: destWidth,
-                                    height: destHeight,
-                                    bitsPerComponent: image.bitsPerComponent,
-                                    bytesPerRow: 0,
-                                    space: image.colorSpace ?? CGColorSpaceCreateDeviceRGB(),
-                                    bitmapInfo: image.bitmapInfo.rawValue)
-            context?.interpolationQuality = .high
-            context?.draw(image, in: CGRect(x: 0, y: 0, width: destWidth, height: destHeight))
-            return context?.makeImage() ?? image
+        if let maxSize = maxSize, maxSize != .zero, (CGFloat(image.width) > maxSize.width || CGFloat(image.height) > maxSize.height) {
+            // Scale down image to fit maxSize while preserving aspect ratio
+            // Try vImage first for better performance, fallback to CGContext if fails
+            if let scaledImage = scaleImageUsingVImage(image, maxSize: maxSize) ?? scaleImageUsingContext(image, maxSize: maxSize) {
+                return scaledImage
+            }
         }
         return image
     }
-    
+
+    private func calculateTargetSize(sourceWidth: Int, sourceHeight: Int, maxSize: CGSize) -> (width: Int, height: Int)? {
+        // Calculate target size preserving aspect ratio
+        let widthRatio = maxSize.width / CGFloat(sourceWidth)
+        let heightRatio = maxSize.height / CGFloat(sourceHeight)
+        let scale = min(widthRatio, heightRatio)
+
+        let targetWidth = Int(CGFloat(sourceWidth) * scale)
+        let targetHeight = Int(CGFloat(sourceHeight) * scale)
+
+        guard targetWidth > 0, targetHeight > 0 else { return nil }
+        return (targetWidth, targetHeight)
+    }
+
+    private func scaleImageUsingVImage(_ image: CGImage, maxSize: CGSize) -> CGImage? {
+        let sourceWidth = image.width
+        let sourceHeight = image.height
+
+        guard let targetSize = calculateTargetSize(sourceWidth: sourceWidth, sourceHeight: sourceHeight, maxSize: maxSize) else {
+            return nil
+        }
+        let (targetWidth, targetHeight) = targetSize
+
+        // Get source image properties
+        guard let colorSpace = image.colorSpace else { return nil }
+        let bitmapInfo = image.bitmapInfo
+        let bitsPerComponent = image.bitsPerComponent
+        let bytesPerPixel = image.bitsPerPixel / 8
+
+        // Create source buffer
+        guard let sourceData = image.dataProvider?.data,
+              let sourceBytes = CFDataGetBytePtr(sourceData) else {
+            return nil
+        }
+
+        var sourceBuffer = vImage_Buffer(
+            data: UnsafeMutableRawPointer(mutating: sourceBytes),
+            height: vImagePixelCount(sourceHeight),
+            width: vImagePixelCount(sourceWidth),
+            rowBytes: image.bytesPerRow
+        )
+
+        // Create destination buffer
+        let destBytesPerRow = targetWidth * bytesPerPixel
+        let destDataSize = targetHeight * destBytesPerRow
+        guard let destData = CFDataCreateMutable(kCFAllocatorDefault, destDataSize) else {
+            return nil
+        }
+        CFDataSetLength(destData, destDataSize)
+
+        guard let destBytes = CFDataGetMutableBytePtr(destData) else {
+            return nil
+        }
+        var destBuffer = vImage_Buffer(
+            data: destBytes,
+            height: vImagePixelCount(targetHeight),
+            width: vImagePixelCount(targetWidth),
+            rowBytes: destBytesPerRow
+        )
+
+        // Perform scaling
+        let error = vImageScale_ARGB8888(&sourceBuffer, &destBuffer, nil, vImage_Flags(kvImageHighQualityResampling))
+
+        guard error == kvImageNoError else {
+            return nil
+        }
+
+        // Create CGImage from destination buffer
+        guard let dataProvider = CGDataProvider(data: destData) else {
+            return nil
+        }
+
+        let scaledImage = CGImage(
+            width: targetWidth,
+            height: targetHeight,
+            bitsPerComponent: bitsPerComponent,
+            bitsPerPixel: image.bitsPerPixel,
+            bytesPerRow: destBytesPerRow,
+            space: colorSpace,
+            bitmapInfo: bitmapInfo,
+            provider: dataProvider,
+            decode: nil,
+            shouldInterpolate: true,
+            intent: .defaultIntent
+        )
+
+        return scaledImage
+    }
+
+    private func scaleImageUsingContext(_ image: CGImage, maxSize: CGSize) -> CGImage? {
+        let sourceWidth = image.width
+        let sourceHeight = image.height
+
+        guard let targetSize = calculateTargetSize(sourceWidth: sourceWidth, sourceHeight: sourceHeight, maxSize: maxSize) else {
+            return nil
+        }
+        let (targetWidth, targetHeight) = targetSize
+
+        // Get image properties
+        guard let colorSpace = image.colorSpace else { return nil }
+        let bitmapInfo = image.bitmapInfo
+
+        // Create context and draw scaled image
+        guard let context = CGContext(
+            data: nil,
+            width: targetWidth,
+            height: targetHeight,
+            bitsPerComponent: image.bitsPerComponent,
+            bytesPerRow: 0,
+            space: colorSpace,
+            bitmapInfo: bitmapInfo.rawValue
+        ) else {
+            return nil
+        }
+
+        context.interpolationQuality = .high
+        context.draw(image, in: CGRect(x: 0, y: 0, width: targetWidth, height: targetHeight))
+
+        return context.makeImage()
+    }
+
     func duration(at index: Int) -> TimeInterval {
         let duration = WebPDecoderGetDurationAtIndex(decoder, Int32(index))
         // https://github.com/onevcat/Kingfisher/blob/3f6992b5cd3143e83b02300ea59c400d4cf0747a/Sources/Image/GIFAnimatedImage.swift#L106
