@@ -281,7 +281,7 @@ class KingfisherWebPTests: XCTestCase {
         let maxSize = CGSize(width: 100, height: 100)
 
         // Compare each scaled frame with corresponding reference frame
-        for index in (0..<webpFrameSource.frameCount).reversed() {
+        for index in 0..<webpFrameSource.frameCount {
             guard let scaledFrame = webpFrameSource.frame(at: index, maxSize: maxSize) else {
                 XCTFail("Failed to decode and scale avatar.webp frame \(index)")
                 continue
@@ -306,7 +306,7 @@ class KingfisherWebPTests: XCTestCase {
 
             // Frames should match exactly since avatar_scaled.webp was created from the same scaling process
             // We use a minimal tolerance to account for lossy WebP encoding
-            XCTAssertTrue(scaledImage.renderEqual(to: referenceImage, withinTolerance: 3, tolerancePercent: 0.001),
+            XCTAssertTrue(scaledImage.renderEqual(to: referenceImage),
                          "Frame \(index) should match avatar_scaled.webp (with minimal tolerance for WebP encoding)")
         }
     }

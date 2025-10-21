@@ -581,22 +581,23 @@ CGImageRef WebPDecoderCopyImageAtIndex(WebPDecoderRef decoder, int index) {
             WebPDecoderConfig config;
             WebPInitDecoderConfig(&config);
             config.options.use_threads = 1;
-            WebPGetFeatures(curr.fragment.bytes, curr.fragment.size, &config.input);
-            config.output.width = info.canvas_width;
-            config.output.height = info.canvas_height;
-            config.output.colorspace = MODE_rgbA;
-            config.output.is_external_memory = 1;
-            
-            CFMutableDataRef data = CFDataCreateMutable(kCFAllocatorDefault, bufSize);
-            if (data) {
-                CFDataSetLength(data, bufSize);
-                config.output.u.RGBA.size = bufSize;
-                config.output.u.RGBA.stride = info.canvas_width * 4;
-                config.output.u.RGBA.rgba = CFDataGetMutableBytePtr(data);
-                if (WebPDecode(curr.fragment.bytes, curr.fragment.size, &config) == VP8_STATUS_OK) {
-                    imageData = data;
-                } else {
-                    CFRelease(data);
+            if (WebPGetFeatures(curr.fragment.bytes, curr.fragment.size, &config.input) == VP8_STATUS_OK) {
+                config.output.width = info.canvas_width;
+                config.output.height = info.canvas_height;
+                config.output.colorspace = MODE_rgbA;
+                config.output.is_external_memory = 1;
+                
+                CFMutableDataRef data = CFDataCreateMutable(kCFAllocatorDefault, bufSize);
+                if (data) {
+                    CFDataSetLength(data, bufSize);
+                    config.output.u.RGBA.size = bufSize;
+                    config.output.u.RGBA.stride = info.canvas_width * 4;
+                    config.output.u.RGBA.rgba = CFDataGetMutableBytePtr(data);
+                    if (WebPDecode(curr.fragment.bytes, curr.fragment.size, &config) == VP8_STATUS_OK) {
+                        imageData = data;
+                    } else {
+                        CFRelease(data);
+                    }
                 }
             }
         }
