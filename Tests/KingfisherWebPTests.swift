@@ -281,7 +281,7 @@ class KingfisherWebPTests: XCTestCase {
         let maxSize = CGSize(width: 100, height: 100)
 
         // Compare each scaled frame with corresponding reference frame
-        for index in 0..<webpFrameSource.frameCount {
+        for index in (0..<webpFrameSource.frameCount).reversed() {
             guard let scaledFrame = webpFrameSource.frame(at: index, maxSize: maxSize) else {
                 XCTFail("Failed to decode and scale avatar.webp frame \(index)")
                 continue
