@@ -306,7 +306,7 @@ class KingfisherWebPTests: XCTestCase {
 
             // Frames should match exactly since avatar_scaled.webp was created from the same scaling process
             // We use a minimal tolerance to account for lossy WebP encoding
-            XCTAssertTrue(scaledImage.renderEqual(to: referenceImage, withinTolerance: 3, tolerancePercent: 0.001),
+            XCTAssertTrue(scaledImage.renderEqual(to: referenceImage),
                          "Frame \(index) should match avatar_scaled.webp (with minimal tolerance for WebP encoding)")
         }
     }

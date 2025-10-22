@@ -219,7 +219,6 @@ fail:
     if (dest->data) free(dest->data);
     dest->data = NULL;
     return NO;
-    return NO;
 }
 
 static int WebPPictureImportCGImage(WebPPicture *picture, CGImageRef image) {
@@ -579,12 +578,27 @@ CGImageRef WebPDecoderCopyImageAtIndex(WebPDecoderRef decoder, int index) {
         }
         int is_key_frame = IsKeyFrame(&curr, &prev, info.canvas_width, info.canvas_height);
         if (is_key_frame) {
-            int width, height;
-            uint8_t *buffer = WebPDecodeRGBA(curr.fragment.bytes, curr.fragment.size, &width, &height);
-            if (width != info.canvas_width || height != info.canvas_height) {
-                free(buffer); // fallback
-            } else {
-                imageData = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, buffer, bufSize, kCFAllocatorDefault);
+            WebPDecoderConfig config;
+            WebPInitDecoderConfig(&config);
+            config.options.use_threads = 1;
+            if (WebPGetFeatures(curr.fragment.bytes, curr.fragment.size, &config.input) == VP8_STATUS_OK) {
+                config.output.width = info.canvas_width;
+                config.output.height = info.canvas_height;
+                config.output.colorspace = MODE_rgbA;
+                config.output.is_external_memory = 1;
+                
+                CFMutableDataRef data = CFDataCreateMutable(kCFAllocatorDefault, bufSize);
+                if (data) {
+                    CFDataSetLength(data, bufSize);
+                    config.output.u.RGBA.size = bufSize;
+                    config.output.u.RGBA.stride = info.canvas_width * 4;
+                    config.output.u.RGBA.rgba = CFDataGetMutableBytePtr(data);
+                    if (WebPDecode(curr.fragment.bytes, curr.fragment.size, &config) == VP8_STATUS_OK) {
+                        imageData = data;
+                    } else {
+                        CFRelease(data);
+                    }
+                }
             }
         }
         WebPDemuxReleaseIterator(&prev);
@@ -618,7 +632,7 @@ anim_decoder:
         return NULL;
     }
     CGDataProviderRef provider = CGDataProviderCreateWithCFData(imageData);
-    CGImageRef image = CGImageCreate(info.canvas_width, info.canvas_height, 8, 32, info.canvas_width * 4, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaPremultipliedLast | kCGBitmapByteOrderDefault, provider, NULL, false, kCGRenderingIntentDefault);
+    CGImageRef image = CGImageCreate(info.canvas_width, info.canvas_height, 8, 32, info.canvas_width * 4, WebPColorSpaceForDeviceRGB(), kCGImageAlphaPremultipliedLast | kCGBitmapByteOrderDefault, provider, NULL, false, kCGRenderingIntentDefault);
     CGDataProviderRelease(provider);
     CFRelease(imageData);
     return image;
