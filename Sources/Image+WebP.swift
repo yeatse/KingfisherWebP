@@ -184,58 +184,61 @@ class WebPFrameSource: ImageFrameSource {
             return nil
         }
 
-        var sourceBuffer = vImage_Buffer(
-            data: UnsafeMutableRawPointer(mutating: sourceBytes),
-            height: vImagePixelCount(sourceHeight),
-            width: vImagePixelCount(sourceWidth),
-            rowBytes: image.bytesPerRow
-        )
+        // Ensure sourceData stays alive while vImage reads from its buffer.
+        // Without this, ARC may release sourceData after CFDataGetBytePtr (its last
+        // direct use), causing vImageScale_ARGB8888 to read from freed memory.
+        return withExtendedLifetime(sourceData) { () -> CGImage? in
+            var sourceBuffer = vImage_Buffer(
+                data: UnsafeMutableRawPointer(mutating: sourceBytes),
+                height: vImagePixelCount(sourceHeight),
+                width: vImagePixelCount(sourceWidth),
+                rowBytes: image.bytesPerRow
+            )
 
-        // Create destination buffer
-        let destBytesPerRow = targetWidth * bytesPerPixel
-        let destDataSize = targetHeight * destBytesPerRow
-        guard let destData = CFDataCreateMutable(kCFAllocatorDefault, destDataSize) else {
-            return nil
+            // Create destination buffer
+            let destBytesPerRow = targetWidth * bytesPerPixel
+            let destDataSize = targetHeight * destBytesPerRow
+            guard let destData = CFDataCreateMutable(kCFAllocatorDefault, destDataSize) else {
+                return nil
+            }
+            CFDataSetLength(destData, destDataSize)
+
+            guard let destBytes = CFDataGetMutableBytePtr(destData) else {
+                return nil
+            }
+            var destBuffer = vImage_Buffer(
+                data: destBytes,
+                height: vImagePixelCount(targetHeight),
+                width: vImagePixelCount(targetWidth),
+                rowBytes: destBytesPerRow
+            )
+
+            // Perform scaling
+            let error = vImageScale_ARGB8888(&sourceBuffer, &destBuffer, nil, vImage_Flags(kvImageHighQualityResampling))
+
+            guard error == kvImageNoError else {
+                return nil
+            }
+
+            // Create CGImage from destination buffer
+            guard let dataProvider = CGDataProvider(data: destData) else {
+                return nil
+            }
+
+            return CGImage(
+                width: targetWidth,
+                height: targetHeight,
+                bitsPerComponent: bitsPerComponent,
+                bitsPerPixel: image.bitsPerPixel,
+                bytesPerRow: destBytesPerRow,
+                space: colorSpace,
+                bitmapInfo: bitmapInfo,
+                provider: dataProvider,
+                decode: nil,
+                shouldInterpolate: true,
+                intent: .defaultIntent
+            )
         }
-        CFDataSetLength(destData, destDataSize)
-
-        guard let destBytes = CFDataGetMutableBytePtr(destData) else {
-            return nil
-        }
-        var destBuffer = vImage_Buffer(
-            data: destBytes,
-            height: vImagePixelCount(targetHeight),
-            width: vImagePixelCount(targetWidth),
-            rowBytes: destBytesPerRow
-        )
-
-        // Perform scaling
-        let error = vImageScale_ARGB8888(&sourceBuffer, &destBuffer, nil, vImage_Flags(kvImageHighQualityResampling))
-
-        guard error == kvImageNoError else {
-            return nil
-        }
-
-        // Create CGImage from destination buffer
-        guard let dataProvider = CGDataProvider(data: destData) else {
-            return nil
-        }
-
-        let scaledImage = CGImage(
-            width: targetWidth,
-            height: targetHeight,
-            bitsPerComponent: bitsPerComponent,
-            bitsPerPixel: image.bitsPerPixel,
-            bytesPerRow: destBytesPerRow,
-            space: colorSpace,
-            bitmapInfo: bitmapInfo,
-            provider: dataProvider,
-            decode: nil,
-            shouldInterpolate: true,
-            intent: .defaultIntent
-        )
-
-        return scaledImage
     }
 
     private func scaleImageUsingContext(_ image: CGImage, maxSize: CGSize) -> CGImage? {
