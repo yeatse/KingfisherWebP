@@ -210,7 +210,9 @@ class WebPFrameSource: ImageFrameSource {
         )
 
         // Perform scaling
-        let error = vImageScale_ARGB8888(&sourceBuffer, &destBuffer, nil, vImage_Flags(kvImageHighQualityResampling))
+        let error = withExtendedLifetime(sourceData) {
+            vImageScale_ARGB8888(&sourceBuffer, &destBuffer, nil, vImage_Flags(kvImageHighQualityResampling))
+        }
 
         guard error == kvImageNoError else {
             return nil
