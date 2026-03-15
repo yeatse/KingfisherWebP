@@ -7,18 +7,31 @@ jobs:
     runs-on: macOS-latest
     strategy:
       matrix:
-        destination: [
-          'macOS',
-          'iOS Simulator,OS=latest',
-          'tvOS Simulator,OS=latest',
-          'watchOS Simulator,OS=latest'
-        ]
+        platform: ['macOS', 'iOS Simulator', 'tvOS Simulator', 'watchOS Simulator']
         swift-version: [5.0]
     steps:
       - uses: actions/checkout@v1
       - name: Run tests
         env:
-          DESTINATION: platform=${{ matrix.destination }}
+          PLATFORM: ${{ matrix.platform }}
           SWIFT_VERSION: ${{ matrix.swift-version }}
         run: |
-          xcodebuild clean test -project KingfisherWebP.xcodeproj -scheme KingfisherWebP -destination "${DESTINATION}"
+          if [ "$PLATFORM" = "macOS" ]; then
+            DESTINATION="platform=macOS"
+          else
+            OS_NAME="${PLATFORM% Simulator}"
+            UDID=$(xcrun simctl list devices available -j | OS_NAME="$OS_NAME" python3 -c "
+import json, sys, os
+data = json.load(sys.stdin)
+name = os.environ['OS_NAME']
+for runtime in sorted(data['devices'], reverse=True):
+    if name in runtime:
+        available = [d for d in data['devices'][runtime] if d.get('isAvailable')]
+        if available:
+            print(available[0]['udid'])
+            sys.exit(0)
+sys.exit(1)
+")
+            DESTINATION="platform=$PLATFORM,id=$UDID"
+          fi
+          xcodebuild clean test -project KingfisherWebP.xcodeproj -scheme KingfisherWebP -destination "$DESTINATION"
