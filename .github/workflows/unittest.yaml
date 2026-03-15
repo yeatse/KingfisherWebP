@@ -20,18 +20,7 @@ jobs:
             DESTINATION="platform=macOS"
           else
             OS_NAME="${PLATFORM% Simulator}"
-            UDID=$(xcrun simctl list devices available -j | OS_NAME="$OS_NAME" python3 -c "
-import json, sys, os
-data = json.load(sys.stdin)
-name = os.environ['OS_NAME']
-for runtime in sorted(data['devices'], reverse=True):
-    if name in runtime:
-        available = [d for d in data['devices'][runtime] if d.get('isAvailable')]
-        if available:
-            print(available[0]['udid'])
-            sys.exit(0)
-sys.exit(1)
-")
+            UDID=$(xcrun simctl list devices available -j | OS_NAME="$OS_NAME" python3 -c 'import json,sys,os;d=json.load(sys.stdin);n=os.environ["OS_NAME"];hits=[x["udid"] for k in sorted(d["devices"],reverse=True) if n in k for x in d["devices"][k] if x.get("isAvailable")];print(hits[0]) if hits else sys.exit(1)')
             DESTINATION="platform=$PLATFORM,id=$UDID"
           fi
           xcodebuild clean test -project KingfisherWebP.xcodeproj -scheme KingfisherWebP -destination "$DESTINATION"
