@@ -631,9 +631,52 @@ anim_decoder:
     if (!imageData) {
         return NULL;
     }
-    CGDataProviderRef provider = CGDataProviderCreateWithCFData(imageData);
-    CGImageRef image = CGImageCreate(info.canvas_width, info.canvas_height, 8, 32, info.canvas_width * 4, WebPColorSpaceForDeviceRGB(), kCGImageAlphaPremultipliedLast | kCGBitmapByteOrderDefault, provider, NULL, false, kCGRenderingIntentDefault);
-    CGDataProviderRelease(provider);
+
+    const size_t srcStride = info.canvas_width * 4;
+    const size_t alignedBytesPerRow = ((srcStride + 31) / 32) * 32;
+    const size_t alignedBufSize = alignedBytesPerRow * info.canvas_height;
+    void *alignedBuf = malloc(alignedBufSize);
+    if (!alignedBuf) {
+        CFRelease(imageData);
+        return NULL;
+    }
+    const uint8_t *src = CFDataGetBytePtr(imageData);
+    for (int y = 0; y < info.canvas_height; y++) {
+        memcpy((uint8_t *)alignedBuf + y * alignedBytesPerRow, src + y * srcStride, srcStride);
+    }
     CFRelease(imageData);
+    imageData = NULL;
+
+    CGColorSpaceRef colorSpace = WebPColorSpaceForDeviceRGB();
+    CGContextRef ctx = CGBitmapContextCreate(NULL,
+                                             info.canvas_width,
+                                             info.canvas_height,
+                                             8,
+                                             alignedBytesPerRow,
+                                             colorSpace,
+                                             kCGImageAlphaPremultipliedLast | kCGBitmapByteOrderDefault);
+    if (!ctx) {
+        free(alignedBuf);
+        return NULL;
+    }
+    void *dstData = CGBitmapContextGetData(ctx);
+    if (!dstData) {
+        CGContextRelease(ctx);
+        free(alignedBuf);
+        return NULL;
+    }
+
+    uint8_t *dst = (uint8_t *)dstData;
+    for (int y = 0; y < info.canvas_height; y++) {
+        memcpy(dst + y * alignedBytesPerRow, (uint8_t *)alignedBuf + y * alignedBytesPerRow, alignedBytesPerRow);
+    }
+
+    free(alignedBuf);
+
+    CGImageRef image = CGBitmapContextCreateImage(ctx);
+    CGContextRelease(ctx);
+    if (!image) {
+        return NULL;
+    }
     return image;
 }
