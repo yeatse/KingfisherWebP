@@ -635,7 +635,7 @@ anim_decoder:
     const size_t srcStride = info.canvas_width * 4;
     const size_t alignedBytesPerRow = ((srcStride + 31) / 32) * 32;
     const size_t alignedBufSize = alignedBytesPerRow * info.canvas_height;
-    void *alignedBuf = malloc(alignedBufSize);
+    void *alignedBuf = calloc(1, alignedBufSize);
     if (!alignedBuf) {
         CFRelease(imageData);
         return NULL;
