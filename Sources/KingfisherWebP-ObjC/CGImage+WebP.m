@@ -634,18 +634,6 @@ anim_decoder:
 
     const size_t srcStride = info.canvas_width * 4;
     const size_t alignedBytesPerRow = ((srcStride + 31) / 32) * 32;
-    const size_t alignedBufSize = alignedBytesPerRow * info.canvas_height;
-    void *alignedBuf = calloc(1, alignedBufSize);
-    if (!alignedBuf) {
-        CFRelease(imageData);
-        return NULL;
-    }
-    const uint8_t *src = CFDataGetBytePtr(imageData);
-    for (int y = 0; y < info.canvas_height; y++) {
-        memcpy((uint8_t *)alignedBuf + y * alignedBytesPerRow, src + y * srcStride, srcStride);
-    }
-    CFRelease(imageData);
-    imageData = NULL;
 
     CGColorSpaceRef colorSpace = WebPColorSpaceForDeviceRGB();
     CGContextRef ctx = CGBitmapContextCreate(NULL,
@@ -656,27 +644,26 @@ anim_decoder:
                                              colorSpace,
                                              kCGImageAlphaPremultipliedLast | kCGBitmapByteOrderDefault);
     if (!ctx) {
-        free(alignedBuf);
+        CFRelease(imageData);
         return NULL;
     }
-    void *dstData = CGBitmapContextGetData(ctx);
-    if (!dstData) {
+
+    uint8_t *dst = (uint8_t *)CGBitmapContextGetData(ctx);
+    if (!dst) {
         CGContextRelease(ctx);
-        free(alignedBuf);
+        CFRelease(imageData);
         return NULL;
     }
 
-    uint8_t *dst = (uint8_t *)dstData;
-    for (int y = 0; y < info.canvas_height; y++) {
-        memcpy(dst + y * alignedBytesPerRow, (uint8_t *)alignedBuf + y * alignedBytesPerRow, alignedBytesPerRow);
+    // Direct copy from imageData to CGBitmapContext buffer (no intermediate buffer)
+    const uint8_t *src = CFDataGetBytePtr(imageData);
+    for (uint32_t y = 0; y < info.canvas_height; y++) {
+        memcpy(dst + y * alignedBytesPerRow, src + y * srcStride, srcStride);
     }
 
-    free(alignedBuf);
-
+    CFRelease(imageData);
     CGImageRef image = CGBitmapContextCreateImage(ctx);
     CGContextRelease(ctx);
-    if (!image) {
-        return NULL;
-    }
+    
     return image;
 }
