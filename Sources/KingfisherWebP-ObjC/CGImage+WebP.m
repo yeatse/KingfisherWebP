@@ -631,9 +631,39 @@ anim_decoder:
     if (!imageData) {
         return NULL;
     }
-    CGDataProviderRef provider = CGDataProviderCreateWithCFData(imageData);
-    CGImageRef image = CGImageCreate(info.canvas_width, info.canvas_height, 8, 32, info.canvas_width * 4, WebPColorSpaceForDeviceRGB(), kCGImageAlphaPremultipliedLast | kCGBitmapByteOrderDefault, provider, NULL, false, kCGRenderingIntentDefault);
-    CGDataProviderRelease(provider);
+
+    const size_t srcStride = info.canvas_width * 4;
+    const size_t alignedBytesPerRow = ((srcStride + 31) / 32) * 32;
+
+    CGColorSpaceRef colorSpace = WebPColorSpaceForDeviceRGB();
+    CGContextRef ctx = CGBitmapContextCreate(NULL,
+                                             info.canvas_width,
+                                             info.canvas_height,
+                                             8,
+                                             alignedBytesPerRow,
+                                             colorSpace,
+                                             kCGImageAlphaPremultipliedLast | kCGBitmapByteOrderDefault);
+    if (!ctx) {
+        CFRelease(imageData);
+        return NULL;
+    }
+
+    uint8_t *dst = (uint8_t *)CGBitmapContextGetData(ctx);
+    if (!dst) {
+        CGContextRelease(ctx);
+        CFRelease(imageData);
+        return NULL;
+    }
+
+    // Direct copy from imageData to CGBitmapContext buffer (no intermediate buffer)
+    const uint8_t *src = CFDataGetBytePtr(imageData);
+    for (uint32_t y = 0; y < info.canvas_height; y++) {
+        memcpy(dst + y * alignedBytesPerRow, src + y * srcStride, srcStride);
+    }
+
     CFRelease(imageData);
+    CGImageRef image = CGBitmapContextCreateImage(ctx);
+    CGContextRelease(ctx);
+    
     return image;
 }
